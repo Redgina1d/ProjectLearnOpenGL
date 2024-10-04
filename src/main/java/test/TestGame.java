@@ -2,6 +2,7 @@ package test;
 
 
 
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 
 
@@ -9,6 +10,7 @@ import core.ILogic;
 import core.ObjectLoader;
 import core.RenderManager;
 import core.WindowManager;
+import core.entity.Entity;
 import core.entity.Model;
 import core.entity.Texture;
 
@@ -24,11 +26,13 @@ public class TestGame implements ILogic {
 	private float d2 = 0.0003f;
 	private float d3 = 0.0003f;
 	
+	private int dir = 1;
+	
 	private final RenderManager renderer;
 	private final ObjectLoader loader;
 	private final WindowManager window;
 	
-	private Model model;
+	private Entity entity;
 	
 	
 	
@@ -45,12 +49,14 @@ public class TestGame implements ILogic {
 		renderer.init();
 		
 		float[] vertices = {
+				// left_top
 				-0.5f, 0.5f, 0f,
+				// left_bottom
 				-0.5f, -0.5f, 0f,
-				0.5f, -0.5f, 0f,
-				0.5f, -0.5f, 0f,
-				0.5f, 0.5f, 0f,
-				-0.5f, 0.5f, 0f,
+				// right_bottom
+				0.2f, -0.5f, 0f,
+				// right_top
+				0.2f, 0.5f, 0f,
 		};
 		int[] indices = {
 				0, 1, 3,
@@ -66,8 +72,9 @@ public class TestGame implements ILogic {
 		
 		
 		// C:/Users/VICTUS/eclipse-workspace/ProjectLearnOpenGL/src/main/resources
-		model = loader.loadModel(vertices, texCoords, indices);
-		model.setTexture(new Texture(loader.loadTexture("C:/Users/VICTUS/eclipse-workspace/ProjectLearnOpenGL/src/main/resources/textures/touchgrass.png")));
+		Model model = loader.loadModel(vertices, texCoords, indices);
+		model.setTexture(new Texture(loader.loadTexture("C:/Users/VICTUS/eclipse-workspace/ProjectLearnOpenGL/src/main/resources/textures/the_kot.gif")));
+		entity = new Entity(model, new Vector3f(1, 0, 0), new Vector3f(0, 0, 0), 1);
 	}
 
 	@Override
@@ -77,13 +84,13 @@ public class TestGame implements ILogic {
 	@Override
 	public void update() {
 		
-		// Schaderpiece
+		// Shaderpiece
 		//float time = (float) GLFW.glfwGetTime();
 
-	    // Передаём значение времени в униформу
+	    // transfer value to uniform
 	    //GL20.glUniform1f(RenderManager.timeLocation, time);
 		
-		//unoptimized dumbass piece
+		//unoptimized piece
 		r += d1;
 		g += d2;
 		b += d3;
@@ -98,7 +105,14 @@ public class TestGame implements ILogic {
         if(b >= 1.0f || b <= 0.0f)
             d3 = -d3;
 
-		
+        
+		if(entity.getPos().x < -1.5f)
+			dir = -dir;
+		if(entity.getPos().x > 1.5f) {
+			entity.getPos().x = 0;
+			dir = -dir;
+		}
+		entity.getPos().x -= 0.004f * dir;
 		
 		/*
 		Random random = new Random();
@@ -122,7 +136,7 @@ public class TestGame implements ILogic {
 			window.setResize(true);
 		}
 		window.setClearColour(r, g, b, a);
-		renderer.render(model);
+		renderer.render(entity);
 	}
 
 	@Override

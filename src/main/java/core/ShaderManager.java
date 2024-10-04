@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.system.MemoryStack;
 
@@ -36,8 +38,27 @@ public class ShaderManager {
 		}
 	}
 	
+	public void setUniform(String unifname, Vector4f value) {
+		GL20.glUniform4f(uniforms.get(unifname), value.x, value.y, value.z, value.w);
+	}
+	
+	public void setUniform(String unifname, Vector3f value) {
+		GL20.glUniform3f(uniforms.get(unifname), value.x, value.y, value.z);
+	}
+	
 	public void setUniform(String unifname, int val) {
 		GL20.glUniform1i(uniforms.get(unifname), val);
+	}
+	
+	public void setUniform(String unifname, boolean value) {
+		float res = 0;
+		if(value)
+			res = 1;
+		GL20.glUniform1f(uniforms.get(unifname), res);
+	}
+	
+	public void setUniform(String unifname, float val) {
+		GL20.glUniform1f(uniforms.get(unifname), val);
 	}
 	
 	public void createVertShader(String shaderCode) throws Exception {
