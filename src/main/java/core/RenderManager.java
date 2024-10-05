@@ -25,16 +25,22 @@ public class RenderManager {
 		shader = new ShaderManager();
 		shader.createVertShader(Utils.loadResource("/shaders/vertex.vs"));
 		shader.createFragShader(Utils.loadResource("/shaders/fragment.fs"));
+		//shader.createVertShader(Utils.loadResource("/shaders/color_render.vs"));
+		//shader.createFragShader(Utils.loadResource("/shaders/color_render.fs"));
 		shader.link();
 		shader.createUniform("textureSampler");
 		shader.createUniform("transformationMatrix");
+		shader.createUniform("projMatrix");
+		shader.createUniform("viewMatrix");
 	}
 	
-	public void render(Entity entity) {
+	public void render(Entity entity, Camera cam) {
 		clear();
 		shader.bind();
 		shader.setUniform("textureSampler", 0);
 		shader.setUniform("transformationMatrix", Transformation.createTransformationMatrix(entity));
+		shader.setUniform("projMatrix", window.updateProjMatrix());
+		shader.setUniform("viewMatrix", Transformation.getViewMatrix(cam));
 		GL30.glBindVertexArray(entity.getModel().getId());
 		GL20.glEnableVertexAttribArray(0);
 		GL20.glEnableVertexAttribArray(1);

@@ -63,10 +63,10 @@ public class WindowManager {
 		glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
 		glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GL11.GL_TRUE);
 		
-		boolean maximized = true;
+		boolean maximized = false;
 		if (width == 0 || height == 0) {
-			width = 100;
-			height = 100;
+			width = 300;
+			height = 230;
 			glfwWindowHint(GLFW.GLFW_MAXIMIZED, GLFW_TRUE);
 		}
 		
@@ -109,8 +109,8 @@ public class WindowManager {
 		GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glEnable(GL11.GL_STENCIL_TEST);
-		GL11.glEnable(GL11.GL_CULL_FACE);
-		GL11.glEnable(GL11.GL_BACK);
+		//GL11.glEnable(GL11.GL_CULL_FACE);
+		//GL11.glEnable(GL11.GL_BACK);
 	}
 	
 	public void update() {

@@ -3,9 +3,10 @@ package test;
 
 
 import org.joml.Vector3f;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
-
+import core.Camera;
 import core.ILogic;
 import core.ObjectLoader;
 import core.RenderManager;
@@ -16,6 +17,10 @@ import core.entity.Texture;
 
 
 public class TestGame implements ILogic {
+	
+	private static final float CAMERA_MOVE_SPEED = 0.0005f;
+	
+	//private static final float CAMERA_ROTATION_SPEED = 0.005f;
 	
 	private float r = 0.0f;
 	private float g = 0.0f;
@@ -33,13 +38,18 @@ public class TestGame implements ILogic {
 	private final WindowManager window;
 	
 	private Entity entity;
+	private Camera cam;
 	
-	
+	Vector3f camInc;
+	//Vector3f camRot;
 	
 	TestGame() {
 		renderer = new RenderManager();
 		window = Launcher.getWindow();
 		loader = new ObjectLoader();
+		cam = new Camera();
+		camInc = new Vector3f(0, 0, 0);
+		//camRot = new Vector3f(0, 0, 0);
 	}
 	
 
@@ -47,48 +57,111 @@ public class TestGame implements ILogic {
 	@Override
 	public void init() throws Exception {
 		renderer.init();
+
+		float[] vertices = new float[] {
+		            -0.5f, 0.5f, 0.5f,
+		            -0.5f, -0.5f, 0.5f,
+		            0.5f, -0.5f, 0.5f,
+		            0.5f, 0.5f, 0.5f,
+		            -0.5f, 0.5f, -0.5f,
+		            0.5f, 0.5f, -0.5f,
+		            -0.5f, -0.5f, -0.5f,
+		            0.5f, -0.5f, -0.5f,
+		            -0.5f, 0.5f, -0.5f,
+		            0.5f, 0.5f, -0.5f,
+		            -0.5f, 0.5f, 0.5f,
+		            0.5f, 0.5f, 0.5f,
+		            0.5f, 0.5f, 0.5f,
+		            0.5f, -0.5f, 0.5f,
+		            -0.5f, 0.5f, 0.5f,
+		            -0.5f, -0.5f, 0.5f,
+		            -0.5f, -0.5f, -0.5f,
+		            0.5f, -0.5f, -0.5f,
+		            -0.5f, -0.5f, 0.5f,
+		            0.5f, -0.5f, 0.5f,
+		};
+		float[] texCoords = new float[]{
+		            0.0f, 0.0f,
+		            0.0f, 0.5f,
+		            0.5f, 0.5f,
+		            0.5f, 0.0f,
+		            0.0f, 0.0f,
+		            0.5f, 0.0f,
+		            0.0f, 0.5f,
+		            0.5f, 0.5f,
+		            0.0f, 0.5f,
+		            0.5f, 0.5f,
+		            0.0f, 1.0f,
+		            0.5f, 1.0f,
+		            0.0f, 0.0f,
+		            0.0f, 0.5f,
+		            0.5f, 0.0f,
+		            0.5f, 0.5f,
+		            0.5f, 0.0f,
+		            1.0f, 0.0f,
+		            0.5f, 0.5f,
+		            1.0f, 0.5f,
+		};
+		int[] indices = new int[]{
+		            0, 1, 3, 3, 1, 2,
+		            8, 10, 11, 9, 8, 11,
+		            12, 13, 7, 5, 12, 7,
+		            14, 15, 6, 4, 14, 6,
+		            16, 18, 19, 17, 16, 19,
+		            4, 6, 7, 5, 4, 7,
+		};
 		
-		float[] vertices = {
-				// left_top
-				-0.5f, 0.5f, 0f,
-				// left_bottom
-				-0.5f, -0.5f, 0f,
-				// right_bottom
-				0.2f, -0.5f, 0f,
-				// right_top
-				0.2f, 0.5f, 0f,
-		};
-		int[] indices = {
-				0, 1, 3,
-				3, 1, 2
-		};
-		
-		float[] texCoords =  {
-				0, 0,
-				0, 1,
-				1, 1,
-				1, 0
-		};
 		
 		
 		// C:/Users/VICTUS/eclipse-workspace/ProjectLearnOpenGL/src/main/resources
 		Model model = loader.loadModel(vertices, texCoords, indices);
-		model.setTexture(new Texture(loader.loadTexture("C:/Users/VICTUS/eclipse-workspace/ProjectLearnOpenGL/src/main/resources/textures/the_kot.gif")));
-		entity = new Entity(model, new Vector3f(1, 0, 0), new Vector3f(0, 0, 0), 1);
+		
+		model.setTexture(new Texture(loader.loadTexture("C:/Users/VICTUS/eclipse-workspace/ProjectLearnOpenGL/src/main/resources/textures/block.png")));
+		entity = new Entity(model, new Vector3f(1, 0, -1), new Vector3f(0, 0, 0), 1);
 	}
 
 	@Override
 	public void input() {
+		camInc.set(0, 0, 0);
+		if(window.isKeyPressed(GLFW.GLFW_KEY_W))
+			camInc.z = -1;
+		if(window.isKeyPressed(GLFW.GLFW_KEY_S))
+			camInc.z = 1;
+		
+		if(window.isKeyPressed(GLFW.GLFW_KEY_A))
+			camInc.x = 1;
+		if(window.isKeyPressed(GLFW.GLFW_KEY_D))
+			camInc.x = -1;
+		
+		if(window.isKeyPressed(GLFW.GLFW_KEY_SPACE))
+			camInc.y = 1;
+		if(window.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT))
+			camInc.y = -1;
+		
+		/*
+		if(window.isKeyPressed(GLFW.GLFW_KEY_UP))
+			camRot.y = -1;
+		if(window.isKeyPressed(GLFW.GLFW_KEY_DOWN))
+			camRot.y = 1;
+		
+		if(window.isKeyPressed(GLFW.GLFW_KEY_LEFT))
+			camRot.x = -1;
+		if(window.isKeyPressed(GLFW.GLFW_KEY_RIGHT))
+			camRot.x = 1;
+		
+		if(window.isKeyPressed(GLFW.GLFW_KEY_P))
+			camRot.z = -1;
+		if(window.isKeyPressed(GLFW.GLFW_KEY_O))
+			camRot.z = 1;
+		*/
 	}
 
 	@Override
 	public void update() {
+		cam.movePos(camInc.x * CAMERA_MOVE_SPEED, camInc.y * CAMERA_MOVE_SPEED, camInc.z * CAMERA_MOVE_SPEED);
+		//cam.moveRotation(camRot.x * CAMERA_ROTATION_SPEED, camRot.y * CAMERA_ROTATION_SPEED, camRot.z * CAMERA_ROTATION_SPEED);
 		
-		// Shaderpiece
-		//float time = (float) GLFW.glfwGetTime();
-
-	    // transfer value to uniform
-	    //GL20.glUniform1f(RenderManager.timeLocation, time);
+		entity.incRotation(0.05f, 0.05f, 0.05f);
 		
 		//unoptimized piece
 		r += d1;
@@ -105,14 +178,17 @@ public class TestGame implements ILogic {
         if(b >= 1.0f || b <= 0.0f)
             d3 = -d3;
 
-        
+        /*
 		if(entity.getPos().x < -1.5f)
 			dir = -dir;
 		if(entity.getPos().x > 1.5f) {
-			entity.getPos().x = 0;
+			entity.getPos().x = 1.5f;
 			dir = -dir;
 		}
 		entity.getPos().x -= 0.004f * dir;
+		entity.getPos().y -= 0.004f * dir;
+		*/
+
 		
 		/*
 		Random random = new Random();
@@ -132,11 +208,12 @@ public class TestGame implements ILogic {
 	@Override
 	public void render() {
 		if(window.isResize()) {
-			GL11.glViewport(0, 0, window.getWidth(), window.getHeight());
+			GL11.glViewport(0, 0, 5, 5);
 			window.setResize(true);
 		}
 		window.setClearColour(r, g, b, a);
-		renderer.render(entity);
+		renderer.render(entity, cam);
+		//renderer.render(entity2);
 	}
 
 	@Override
