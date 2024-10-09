@@ -111,6 +111,7 @@ public class WindowManager {
 		GL11.glEnable(GL11.GL_STENCIL_TEST);
 		//GL11.glEnable(GL11.GL_CULL_FACE);
 		//GL11.glEnable(GL11.GL_BACK);
+		//GL11.glEnable(GL11.GL_ALPHA);
 	}
 	
 	public void update() {
@@ -172,7 +173,12 @@ public class WindowManager {
 		return vSync;
 	}
 	
+	public long getWindowHandle() {
+		return window;
+	}
+	
 	public void setResize(boolean resize) {
 		this.resize = resize;
 	}
+
 }

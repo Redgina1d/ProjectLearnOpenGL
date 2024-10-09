@@ -1,7 +1,5 @@
 package test;
 
-
-
 import core.EngineManager;
 import core.WindowManager;
 import core.utils.Constants;

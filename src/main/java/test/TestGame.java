@@ -14,11 +14,12 @@ import core.WindowManager;
 import core.entity.Entity;
 import core.entity.Model;
 import core.entity.Texture;
+import core.utils.Constants;
 
 
 public class TestGame implements ILogic {
 	
-	private static final float CAMERA_MOVE_SPEED = 0.0005f;
+	private static final float CAMERA_MOVE_SPEED = 0.0015f;
 	
 	//private static final float CAMERA_ROTATION_SPEED = 0.005f;
 	
@@ -31,7 +32,7 @@ public class TestGame implements ILogic {
 	private float d2 = 0.0003f;
 	private float d3 = 0.0003f;
 	
-	private int dir = 1;
+	//private int dir = 1;
 	
 	private final RenderManager renderer;
 	private final ObjectLoader loader;
@@ -57,7 +58,7 @@ public class TestGame implements ILogic {
 	@Override
 	public void init() throws Exception {
 		renderer.init();
-
+		/*
 		float[] vertices = new float[] {
 		            -0.5f, 0.5f, 0.5f,
 		            -0.5f, -0.5f, 0.5f,
@@ -111,12 +112,13 @@ public class TestGame implements ILogic {
 		            4, 6, 7, 5, 4, 7,
 		};
 		
-		
+		*/
 		
 		// C:/Users/VICTUS/eclipse-workspace/ProjectLearnOpenGL/src/main/resources
-		Model model = loader.loadModel(vertices, texCoords, indices);
+
+		Model model = loader.loadOBJModel("untitled");
 		
-		model.setTexture(new Texture(loader.loadTexture("C:/Users/VICTUS/eclipse-workspace/ProjectLearnOpenGL/src/main/resources/textures/block.png")));
+		model.setTexture(new Texture(loader.loadTexture("C:/Users/VICTUS/eclipse-workspace/ProjectLearnOpenGL/src/main/resources/textures/touchgrass.png")));
 		entity = new Entity(model, new Vector3f(1, 0, -1), new Vector3f(0, 0, 0), 1);
 	}
 

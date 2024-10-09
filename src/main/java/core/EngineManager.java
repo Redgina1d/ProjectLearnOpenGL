@@ -1,6 +1,5 @@
 package core;
 
-import java.util.zip.Inflater;
 
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;

@@ -1,9 +1,17 @@
 package core.utils;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import org.lwjgl.system.MemoryUtil;
@@ -32,4 +40,27 @@ public class Utils {
 		}
 		return result;
 	}
+	
+	public static List<String> readAllLines(String fileName) {
+		List<String> lis = new ArrayList<>();
+		FileReader fr = null;
+		try {
+			fr = new FileReader(new File(Constants.DIR + "/src/main/resources/models/" + fileName + ".obj"));
+		} catch (FileNotFoundException e) {
+			System.err.println("no file =(");
+			e.printStackTrace();
+		}
+		try(BufferedReader br = new BufferedReader(fr)) {
+			String line;
+			while ((line = br.readLine()) != null) {
+				lis.add(line);
+				
+			}
+		} catch (IOException | NullPointerException e) {
+			e.printStackTrace();
+		}
+		
+		return lis;
+	}
+	
 }
