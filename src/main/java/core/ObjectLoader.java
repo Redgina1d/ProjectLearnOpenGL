@@ -43,7 +43,7 @@ public class ObjectLoader {
 			String[] tokens = line.split("\\s+");
 			switch (tokens[0]) {
 			case "v":
-				// Vertices
+				// VERTICES
 				Vector3f vertxs = new Vector3f(
 						Float.parseFloat(tokens[1]),
 						Float.parseFloat(tokens[2]),
@@ -52,7 +52,7 @@ public class ObjectLoader {
 				vertices.add(vertxs);
 				break;
 			case "vt":
-				// vert texs
+				// VERTEX TEXTURES
 				Vector2f texs = new Vector2f(
 						Float.parseFloat(tokens[1]),
 						Float.parseFloat(tokens[2])
@@ -60,7 +60,7 @@ public class ObjectLoader {
 				textures.add(texs);
 				break;
 			case "vn":
-				// vertnormals
+				// VERTEX NORMALS
 				Vector3f normlsx = new Vector3f(
 						Float.parseFloat(tokens[1]),
 						Float.parseFloat(tokens[2]),
@@ -69,7 +69,7 @@ public class ObjectLoader {
 				normals.add(normlsx);
 				break;
 			case "f":
-				//faces
+				// FACES
 				for(int i = 1; i < tokens.length; i++){
 				    processFace(tokens[i], faces);
 
@@ -88,6 +88,32 @@ public class ObjectLoader {
 			verticesArr[i * 3 + 2] = pos.z;
 			i++;
 		}
+		/* another foolish attempt
+		
+		
+		float[] verticesArr = new float[] {
+	            -0.5f, 0.5f, 0.5f,
+	            -0.5f, -0.5f, 0.5f,
+	            0.5f, -0.5f, 0.5f,
+	            0.5f, 0.5f, 0.5f,
+	            -0.5f, 0.5f, -0.5f,
+	            0.5f, 0.5f, -0.5f,
+	            -0.5f, -0.5f, -0.5f,
+	            0.5f, -0.5f, -0.5f,
+	            -0.5f, 0.5f, -0.5f,
+	            0.5f, 0.5f, -0.5f,
+	            -0.5f, 0.5f, 0.5f,
+	            0.5f, 0.5f, 0.5f,
+	            0.5f, 0.5f, 0.5f,
+	            0.5f, -0.5f, 0.5f,
+	            -0.5f, 0.5f, 0.5f,
+	            -0.5f, -0.5f, 0.5f,
+	            -0.5f, -0.5f, -0.5f,
+	            0.5f, -0.5f, -0.5f,
+	            -0.5f, -0.5f, 0.5f,
+	            0.5f, -0.5f, 0.5f,
+		};
+		*/
 		
 		float[] texCoordArr = new float[vertices.size() * 2];
 		float[] normalArr = new float[vertices.size() * 3];
@@ -97,6 +123,26 @@ public class ObjectLoader {
 		}
 		
 		int[] indicesArr = indices.stream().mapToInt((Integer v) -> v).toArray();
+		
+		/* Foolish attempt to fix cube malformness
+		int[] indicesArr = new int[faces.size()];
+		
+		for (int j = 0; j < faces.size(); j++) {
+			System.out.println("loop: " + j + " face: " + faces.get(j).x + " sizeFace: " + faces.size() + " sizeIndices " + indicesArr.length);
+			indicesArr[j] = faces.get(j).x;
+		}
+		
+		
+		int[] indicesArr = new int[]{
+	            0, 1, 3, 3, 1, 2,
+	            8, 10, 11, 9, 8, 11,
+	            12, 13, 7, 5, 12, 7,
+	            14, 15, 6, 4, 14, 6,
+	            16, 18, 19, 17, 16, 19,
+	            4, 6, 7, 5, 4, 7,
+		};
+		*/	
+		
 		
 		return loadModel(verticesArr, texCoordArr, indicesArr);
 	}
