@@ -116,9 +116,9 @@ public class TestGame implements ILogic {
 		
 		// C:/Users/VICTUS/eclipse-workspace/ProjectLearnOpenGL/src/main/resources
 
-		Model model = loader.loadOBJModel("triangulated_cube");
+		Model model = loader.loadOBJModel("uv_sphere");
 		
-		model.setTexture(new Texture(loader.loadTexture("C:/Users/VICTUS/eclipse-workspace/ProjectLearnOpenGL/src/main/resources/textures/touchgrass.png")));
+		model.setTexture(new Texture(loader.loadTexture("C:/Users/VICTUS/eclipse-workspace/ProjectLearnOpenGL/src/main/resources/textures/sky.png")));
 		entity = new Entity(model, new Vector3f(1, 0, -1), new Vector3f(0, 0, 0), 1);
 	}
 
@@ -163,7 +163,7 @@ public class TestGame implements ILogic {
 		cam.movePos(camInc.x * CAMERA_MOVE_SPEED, camInc.y * CAMERA_MOVE_SPEED, camInc.z * CAMERA_MOVE_SPEED);
 		//cam.moveRotation(camRot.x * CAMERA_ROTATION_SPEED, camRot.y * CAMERA_ROTATION_SPEED, camRot.z * CAMERA_ROTATION_SPEED);
 		
-		//entity.incRotation(0.00f, 0.05f, 0.00f);
+		entity.incRotation(0.05f, 0.05f, 0.05f);
 		
 		//unoptimized piece
 		r += d1;

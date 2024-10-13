@@ -57,16 +57,22 @@ public class WindowManager {
 		// Configure GLFW
 		glfwDefaultWindowHints(); // optional, the current window hints are already the default
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
-		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
+		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // the window will NOT be resizable
+		glfwWindowHint(GLFW.GLFW_MAXIMIZED, GLFW_TRUE);
+		glfwWindowHint(GLFW.GLFW_DECORATED, GLFW_FALSE);
 		glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);  // OpenGL 3
 		glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 2);  // OpenGL 3.2
 		glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
 		glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GL11.GL_TRUE);
 		
-		boolean maximized = false;
+		GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
+		width = vidMode.width();
+		height = vidMode.height();
+		
+		boolean maximized = true;
 		if (width == 0 || height == 0) {
-			width = 300;
-			height = 230;
+			width = vidMode.width();
+			height = vidMode.height();
 			glfwWindowHint(GLFW.GLFW_MAXIMIZED, GLFW_TRUE);
 		}
 		
@@ -88,13 +94,19 @@ public class WindowManager {
 					e.printStackTrace();
 				}
 				
+			} else if (key == GLFW.GLFW_KEY_MINUS && action == GLFW_RELEASE) {
+				try {
+					GLFW.glfwIconifyWindow(window);
+				} catch (Exception e2) {
+					e2.printStackTrace();
+				}
 			}
 		});
 		
 		if(maximized)
 			GLFW.glfwMaximizeWindow(window);
 		else {
-			GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
+			//
 		}
 		GLFW.glfwMakeContextCurrent(window);
 		
