@@ -144,7 +144,7 @@ public class ObjectLoader {
 		*/	
 		
 		
-		return loadModel(verticesArr, texCoordArr, indicesArr);
+		return loadModel(verticesArr, texCoordArr, normalArr, indicesArr);
 	}
 	
 	private static void processVertex(int pos, int texCoord, int normal, List<Vector2f> texCoordList,
@@ -183,11 +183,12 @@ public class ObjectLoader {
 		faces.add(facesVec);
 	}
 	
-	public Model loadModel(float[] vertices, float[] textureCoords, int[] indices) {
+	public Model loadModel(float[] vertices, float[] textureCoords, float[] normals, int[] indices) {
 		int id = createVAO();
 		storeIndicesBuffer(indices);
 		storeDataInAttrList(0, 3, vertices);
 		storeDataInAttrList(1, 2, textureCoords);
+		storeDataInAttrList(2, 3, normals);
 		unbind();
 		return new Model(id, indices.length);
 	}

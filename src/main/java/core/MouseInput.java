@@ -34,5 +34,34 @@ public class MouseInput {
 			rightButtonPress = button == GLFW.GLFW_MOUSE_BUTTON_2 && action == GLFW.GLFW_PRESS;
 		});
 	}
+	public void input() {
+		disVec.x = 0;
+		disVec.y = 0;
+		if(prevPos.x > 0 && prevPos.y > 0 && inWindow) {
+			double x = currPos.x - prevPos.x;
+			double y = currPos.y - prevPos.y;
+			boolean rotX = x != 0;
+			boolean rotY = y != 0;
+			if(rotX)
+				disVec.y = (float) x;
+			if(rotY)
+				disVec.x = (float) y;
+		}
+		prevPos.x = currPos.x;
+		prevPos.y = currPos.y;
+	}
+
+	public Vector2f getDisVec() {
+		return disVec;
+	}
+
+	public boolean isLeftButtonPress() {
+		return leftButtonPress;
+	}
+
+	public boolean isRightButtonPress() {
+		return rightButtonPress;
+	}
+	
 	
 }

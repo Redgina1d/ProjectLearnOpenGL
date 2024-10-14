@@ -9,6 +9,8 @@ import org.joml.Vector4f;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.system.MemoryStack;
 
+import core.entity.Material;
+
 public class ShaderManager {
 	
 	public final int progID;
@@ -31,6 +33,14 @@ public class ShaderManager {
 		uniforms.put(unifName, unifLoc);
 	}
 	
+	public void createMaterialUniform(String unifName) throws Exception {
+		createUniform(unifName + ".ambient");
+		createUniform(unifName + ".diffuse");
+		createUniform(unifName + ".specular");
+		createUniform(unifName + ".hasTexture");
+		createUniform(unifName + ".reflectance");
+	}
+	
 	public void setUniform(String unifname, Matrix4f val) {
 		try(MemoryStack stack = MemoryStack.stackPush()) {
 			GL20.glUniformMatrix4fv(uniforms.get(unifname), false,
@@ -38,10 +48,19 @@ public class ShaderManager {
 		}
 	}
 	
+	public void setUniform(String unifName, Material material) {
+		setUniform(unifName + ".ambient", material.getAmbCol());
+		setUniform(unifName + ".diffuse", material.getDifCol());
+		setUniform(unifName + ".specular", material.getSpecCol());
+		setUniform(unifName + ".hasTexture", material.hasTexture() ? 1 : 0);
+		setUniform(unifName + ".reflectance", material.getReflect());
+	}
+	
 	public void setUniform(String unifname, Vector4f value) {
 		GL20.glUniform4f(uniforms.get(unifname), value.x, value.y, value.z, value.w);
 	}
 	
+	// Unif with ambient light?
 	public void setUniform(String unifname, Vector3f value) {
 		GL20.glUniform3f(uniforms.get(unifname), value.x, value.y, value.z);
 	}

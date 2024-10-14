@@ -1,13 +1,13 @@
 package test;
 
-
-
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
 import core.Camera;
 import core.ILogic;
+import core.MouseInput;
 import core.ObjectLoader;
 import core.RenderManager;
 import core.WindowManager;
@@ -16,12 +16,7 @@ import core.entity.Model;
 import core.entity.Texture;
 import core.utils.Constants;
 
-
 public class TestGame implements ILogic {
-	
-	private static final float CAMERA_MOVE_SPEED = 0.0015f;
-	
-	//private static final float CAMERA_ROTATION_SPEED = 0.005f;
 	
 	private float r = 0.0f;
 	private float g = 0.0f;
@@ -58,67 +53,10 @@ public class TestGame implements ILogic {
 	@Override
 	public void init() throws Exception {
 		renderer.init();
-		/*
-		float[] vertices = new float[] {
-		            -0.5f, 0.5f, 0.5f,
-		            -0.5f, -0.5f, 0.5f,
-		            0.5f, -0.5f, 0.5f,
-		            0.5f, 0.5f, 0.5f,
-		            -0.5f, 0.5f, -0.5f,
-		            0.5f, 0.5f, -0.5f,
-		            -0.5f, -0.5f, -0.5f,
-		            0.5f, -0.5f, -0.5f,
-		            -0.5f, 0.5f, -0.5f,
-		            0.5f, 0.5f, -0.5f,
-		            -0.5f, 0.5f, 0.5f,
-		            0.5f, 0.5f, 0.5f,
-		            0.5f, 0.5f, 0.5f,
-		            0.5f, -0.5f, 0.5f,
-		            -0.5f, 0.5f, 0.5f,
-		            -0.5f, -0.5f, 0.5f,
-		            -0.5f, -0.5f, -0.5f,
-		            0.5f, -0.5f, -0.5f,
-		            -0.5f, -0.5f, 0.5f,
-		            0.5f, -0.5f, 0.5f,
-		};
-		float[] texCoords = new float[]{
-		            0.0f, 0.0f,
-		            0.0f, 0.5f,
-		            0.5f, 0.5f,
-		            0.5f, 0.0f,
-		            0.0f, 0.0f,
-		            0.5f, 0.0f,
-		            0.0f, 0.5f,
-		            0.5f, 0.5f,
-		            0.0f, 0.5f,
-		            0.5f, 0.5f,
-		            0.0f, 1.0f,
-		            0.5f, 1.0f,
-		            0.0f, 0.0f,
-		            0.0f, 0.5f,
-		            0.5f, 0.0f,
-		            0.5f, 0.5f,
-		            0.5f, 0.0f,
-		            1.0f, 0.0f,
-		            0.5f, 0.5f,
-		            1.0f, 0.5f,
-		};
-		int[] indices = new int[]{
-		            0, 1, 3, 3, 1, 2,
-		            8, 10, 11, 9, 8, 11,
-		            12, 13, 7, 5, 12, 7,
-		            14, 15, 6, 4, 14, 6,
-		            16, 18, 19, 17, 16, 19,
-		            4, 6, 7, 5, 4, 7,
-		};
-		
-		*/
-		
-		// C:/Users/VICTUS/eclipse-workspace/ProjectLearnOpenGL/src/main/resources
 
 		Model model = loader.loadOBJModel("uv_sphere");
 		
-		model.setTexture(new Texture(loader.loadTexture("C:/Users/VICTUS/eclipse-workspace/ProjectLearnOpenGL/src/main/resources/textures/sky.png")));
+		model.setTexture(new Texture(loader.loadTexture("C:/Users/VICTUS/eclipse-workspace/ProjectLearnOpenGL/src/main/resources/textures/sky.png")), 1f);
 		entity = new Entity(model, new Vector3f(1, 0, -1), new Vector3f(0, 0, 0), 1);
 	}
 
@@ -139,33 +77,20 @@ public class TestGame implements ILogic {
 			camInc.y = 1;
 		if(window.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT))
 			camInc.y = -1;
-		
-		/*
-		if(window.isKeyPressed(GLFW.GLFW_KEY_UP))
-			camRot.y = -1;
-		if(window.isKeyPressed(GLFW.GLFW_KEY_DOWN))
-			camRot.y = 1;
-		
-		if(window.isKeyPressed(GLFW.GLFW_KEY_LEFT))
-			camRot.x = -1;
-		if(window.isKeyPressed(GLFW.GLFW_KEY_RIGHT))
-			camRot.x = 1;
-		
-		if(window.isKeyPressed(GLFW.GLFW_KEY_P))
-			camRot.z = -1;
-		if(window.isKeyPressed(GLFW.GLFW_KEY_O))
-			camRot.z = 1;
-		*/
 	}
 
 	@Override
-	public void update() {
-		cam.movePos(camInc.x * CAMERA_MOVE_SPEED, camInc.y * CAMERA_MOVE_SPEED, camInc.z * CAMERA_MOVE_SPEED);
-		//cam.moveRotation(camRot.x * CAMERA_ROTATION_SPEED, camRot.y * CAMERA_ROTATION_SPEED, camRot.z * CAMERA_ROTATION_SPEED);
+	public void update(float interval, MouseInput mouseInput) {
+		cam.movePos(camInc.x * Constants.CAM_STEP, camInc.y * Constants.CAM_STEP, camInc.z * Constants.CAM_STEP);
 		
-		entity.incRotation(0.05f, 0.05f, 0.05f);
+		if(mouseInput.isRightButtonPress()) {
+			Vector2f rotVec = mouseInput.getDisVec();
+			cam.moveRotation(rotVec.x * Constants.MOUSE_SENSITIVITY, rotVec.y * Constants.MOUSE_SENSITIVITY, 0);
+		}
 		
-		//unoptimized piece
+		entity.incRotation(0.0f, 0.05f, 0.0f);
+		
+		/*
 		r += d1;
 		g += d2;
 		b += d3;
@@ -179,6 +104,7 @@ public class TestGame implements ILogic {
             d2 = -d2;
         if(b >= 1.0f || b <= 0.0f)
             d3 = -d3;
+        */
 
         /*
 		if(entity.getPos().x < -1.5f)
@@ -226,3 +152,59 @@ public class TestGame implements ILogic {
 	}
 
 }
+
+/* cube
+float[] vertices = new float[] {
+            -0.5f, 0.5f, 0.5f,
+            -0.5f, -0.5f, 0.5f,
+            0.5f, -0.5f, 0.5f,
+            0.5f, 0.5f, 0.5f,
+            -0.5f, 0.5f, -0.5f,
+            0.5f, 0.5f, -0.5f,
+            -0.5f, -0.5f, -0.5f,
+            0.5f, -0.5f, -0.5f,
+            -0.5f, 0.5f, -0.5f,
+            0.5f, 0.5f, -0.5f,
+            -0.5f, 0.5f, 0.5f,
+            0.5f, 0.5f, 0.5f,
+            0.5f, 0.5f, 0.5f,
+            0.5f, -0.5f, 0.5f,
+            -0.5f, 0.5f, 0.5f,
+            -0.5f, -0.5f, 0.5f,
+            -0.5f, -0.5f, -0.5f,
+            0.5f, -0.5f, -0.5f,
+            -0.5f, -0.5f, 0.5f,
+            0.5f, -0.5f, 0.5f,
+};
+float[] texCoords = new float[]{
+            0.0f, 0.0f,
+            0.0f, 0.5f,
+            0.5f, 0.5f,
+            0.5f, 0.0f,
+            0.0f, 0.0f,
+            0.5f, 0.0f,
+            0.0f, 0.5f,
+            0.5f, 0.5f,
+            0.0f, 0.5f,
+            0.5f, 0.5f,
+            0.0f, 1.0f,
+            0.5f, 1.0f,
+            0.0f, 0.0f,
+            0.0f, 0.5f,
+            0.5f, 0.0f,
+            0.5f, 0.5f,
+            0.5f, 0.0f,
+            1.0f, 0.0f,
+            0.5f, 0.5f,
+            1.0f, 0.5f,
+};
+int[] indices = new int[]{
+            0, 1, 3, 3, 1, 2,
+            8, 10, 11, 9, 8, 11,
+            12, 13, 7, 5, 12, 7,
+            14, 15, 6, 4, 14, 6,
+            16, 18, 19, 17, 16, 19,
+            4, 6, 7, 5, 4, 7,
+};
+
+*/
