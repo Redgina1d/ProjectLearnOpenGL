@@ -7,10 +7,13 @@ in vec3 normal;
 out vec2 fragTextureCoord;
 out vec3 fragNormal;
 out vec3 fragPos;
+out vec3 surfaceNormal;
+out vec3 toLightVector;
 
 uniform mat4 transformationMatrix;
 uniform mat4 projMatrix;
 uniform mat4 viewMatrix;
+uniform vec3 lightPosition;
 
 void main() {
 	vec4 worldPos = transformationMatrix * vec4(position, 1.0);
@@ -19,4 +22,7 @@ void main() {
 	fragNormal = normalize(worldPos).xyz;
 	fragPos = worldPos.xyz; 
 	fragTextureCoord = textureCoord;
+	
+	surfaceNormal = (transformationMatrix * vec4(normal, 0.0)).xyz;
+	toLightVector = lightPosition - worldPos.xyz;
 }

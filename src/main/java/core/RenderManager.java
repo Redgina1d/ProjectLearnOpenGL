@@ -7,6 +7,7 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
 import core.entity.Entity;
+import core.entity.Light;
 import core.utils.Constants;
 import core.utils.Transformation;
 import core.utils.Utils;
@@ -34,6 +35,13 @@ public class RenderManager {
 		shader.createUniform("viewMatrix");
 		shader.createUniform("ambientLight");
 		shader.createMaterialUniform("material");
+		shader.createUniform("lightPosition");
+		shader.createUniform("lightColour");
+	}
+	
+	public void loadLight(Light light) {
+		shader.setUniform("lightPosition", light.getPos());
+		shader.setUniform("lightColour", light.getColor());
 	}
 	
 	public void render(Entity entity, Camera cam) {

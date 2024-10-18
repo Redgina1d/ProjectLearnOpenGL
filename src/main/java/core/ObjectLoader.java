@@ -88,32 +88,6 @@ public class ObjectLoader {
 			verticesArr[i * 3 + 2] = pos.z;
 			i++;
 		}
-		/* another foolish attempt
-		
-		
-		float[] verticesArr = new float[] {
-	            -0.5f, 0.5f, 0.5f,
-	            -0.5f, -0.5f, 0.5f,
-	            0.5f, -0.5f, 0.5f,
-	            0.5f, 0.5f, 0.5f,
-	            -0.5f, 0.5f, -0.5f,
-	            0.5f, 0.5f, -0.5f,
-	            -0.5f, -0.5f, -0.5f,
-	            0.5f, -0.5f, -0.5f,
-	            -0.5f, 0.5f, -0.5f,
-	            0.5f, 0.5f, -0.5f,
-	            -0.5f, 0.5f, 0.5f,
-	            0.5f, 0.5f, 0.5f,
-	            0.5f, 0.5f, 0.5f,
-	            0.5f, -0.5f, 0.5f,
-	            -0.5f, 0.5f, 0.5f,
-	            -0.5f, -0.5f, 0.5f,
-	            -0.5f, -0.5f, -0.5f,
-	            0.5f, -0.5f, -0.5f,
-	            -0.5f, -0.5f, 0.5f,
-	            0.5f, -0.5f, 0.5f,
-		};
-		*/
 		
 		float[] texCoordArr = new float[vertices.size() * 2];
 		float[] normalArr = new float[vertices.size() * 3];
@@ -141,8 +115,34 @@ public class ObjectLoader {
 	            16, 18, 19, 17, 16, 19,
 	            4, 6, 7, 5, 4, 7,
 		};
-		*/	
+		*/
 		
+		/* another foolish attempt
+		
+		
+		float[] verticesArr = new float[] {
+	            -0.5f, 0.5f, 0.5f,
+	            -0.5f, -0.5f, 0.5f,
+	            0.5f, -0.5f, 0.5f,
+	            0.5f, 0.5f, 0.5f,
+	            -0.5f, 0.5f, -0.5f,
+	            0.5f, 0.5f, -0.5f,
+	            -0.5f, -0.5f, -0.5f,
+	            0.5f, -0.5f, -0.5f,
+	            -0.5f, 0.5f, -0.5f,
+	            0.5f, 0.5f, -0.5f,
+	            -0.5f, 0.5f, 0.5f,
+	            0.5f, 0.5f, 0.5f,
+	            0.5f, 0.5f, 0.5f,
+	            0.5f, -0.5f, 0.5f,
+	            -0.5f, 0.5f, 0.5f,
+	            -0.5f, -0.5f, 0.5f,
+	            -0.5f, -0.5f, -0.5f,
+	            0.5f, -0.5f, -0.5f,
+	            -0.5f, -0.5f, 0.5f,
+	            0.5f, -0.5f, 0.5f,
+		};
+		*/
 		
 		return loadModel(verticesArr, texCoordArr, normalArr, indicesArr);
 	}

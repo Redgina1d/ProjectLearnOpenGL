@@ -1,5 +1,7 @@
 package test;
 
+import java.lang.ProcessBuilder.Redirect;
+
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
@@ -12,6 +14,7 @@ import core.ObjectLoader;
 import core.RenderManager;
 import core.WindowManager;
 import core.entity.Entity;
+import core.entity.Light;
 import core.entity.Model;
 import core.entity.Texture;
 import core.utils.Constants;
@@ -23,9 +26,9 @@ public class TestGame implements ILogic {
 	private float b = 0.0f;
 	private float a = 0.0f;
 	
-	private float d1 = 0.0003f;
-	private float d2 = 0.0003f;
-	private float d3 = 0.0003f;
+	private float d1 = 0.003f;
+	private float d2 = 0.003f;
+	private float d3 = 0.003f;
 	
 	//private int dir = 1;
 	
@@ -35,6 +38,7 @@ public class TestGame implements ILogic {
 	
 	private Entity entity;
 	private Camera cam;
+	private Light light;
 	
 	Vector3f camInc;
 	//Vector3f camRot;
@@ -46,6 +50,7 @@ public class TestGame implements ILogic {
 		cam = new Camera();
 		camInc = new Vector3f(0, 0, 0);
 		//camRot = new Vector3f(0, 0, 0);
+		light = new Light(new Vector3f(0,5,5), new Vector3f(1,1,1));
 	}
 	
 
@@ -81,6 +86,7 @@ public class TestGame implements ILogic {
 
 	@Override
 	public void update(float interval, MouseInput mouseInput) {
+		renderer.loadLight(light);
 		cam.movePos(camInc.x * Constants.CAM_STEP, camInc.y * Constants.CAM_STEP, camInc.z * Constants.CAM_STEP);
 		
 		if(mouseInput.isRightButtonPress()) {
@@ -91,6 +97,21 @@ public class TestGame implements ILogic {
 		entity.incRotation(0.0f, 0.05f, 0.0f);
 		
 		/*
+		 * party mode
+		Constants.AMB_LIGHT.x += d1;
+		Constants.AMB_LIGHT.y += d2;
+		Constants.AMB_LIGHT.z += d3;
+		if(Constants.AMB_LIGHT.x >= 0.2f)
+			Constants.AMB_LIGHT.y += d2;
+		if(Constants.AMB_LIGHT.y >= 0.2f)
+			Constants.AMB_LIGHT.z += d3;
+        if(Constants.AMB_LIGHT.x >= 1.0f || Constants.AMB_LIGHT.x <= 0.0f)
+            d1 = -d1;
+        if(Constants.AMB_LIGHT.y >= 1.0f || Constants.AMB_LIGHT.y <= 0.0f)
+            d2 = -d2;
+        if(Constants.AMB_LIGHT.z >= 1.0f || Constants.AMB_LIGHT.z <= 0.0f)
+            d3 = -d3;
+		
 		r += d1;
 		g += d2;
 		b += d3;
