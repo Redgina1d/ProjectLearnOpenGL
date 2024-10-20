@@ -1,6 +1,5 @@
 package test;
 
-import java.lang.ProcessBuilder.Redirect;
 
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -21,9 +20,9 @@ import core.utils.Constants;
 
 public class TestGame implements ILogic {
 	
-	private float r = 0.0f;
-	private float g = 0.0f;
-	private float b = 0.0f;
+	private float r = 0.3f;
+	private float g = 0.3f;
+	private float b = 0.3f;
 	private float a = 0.0f;
 	
 	private float d1 = 0.003f;
@@ -50,19 +49,31 @@ public class TestGame implements ILogic {
 		cam = new Camera();
 		camInc = new Vector3f(0, 0, 0);
 		//camRot = new Vector3f(0, 0, 0);
-		light = new Light(new Vector3f(0,5,5), new Vector3f(1,1,1));
+		light = new Light(new Vector3f(0,5,5), new Vector3f(3.0f,8.0f,6.0f));
+		
 	}
 	
 
 
 	@Override
 	public void init() throws Exception {
+		
 		renderer.init();
 
+		
 		Model model = loader.loadOBJModel("uv_sphere");
 		
-		model.setTexture(new Texture(loader.loadTexture("C:/Users/VICTUS/eclipse-workspace/ProjectLearnOpenGL/src/main/resources/textures/sky.png")), 1f);
+		model.setTexture(new Texture(loader.loadTexture("C:/Users/VICTUS/eclipse-workspace/ProjectLearnOpenGL/src/main/resources/textures/sky.png")));
 		entity = new Entity(model, new Vector3f(1, 0, -1), new Vector3f(0, 0, 0), 1);
+		r = 0.0f;
+		g += 0.0f;
+		b += 0.0f;
+		
+		Texture tex = entity.getModel().getTexture();
+		tex.setShineDamper(20);
+		tex.setReflectivity(1);
+		
+		
 	}
 
 	@Override
@@ -87,6 +98,8 @@ public class TestGame implements ILogic {
 	@Override
 	public void update(float interval, MouseInput mouseInput) {
 		renderer.loadLight(light);
+		
+		
 		cam.movePos(camInc.x * Constants.CAM_STEP, camInc.y * Constants.CAM_STEP, camInc.z * Constants.CAM_STEP);
 		
 		if(mouseInput.isRightButtonPress()) {
@@ -94,7 +107,7 @@ public class TestGame implements ILogic {
 			cam.moveRotation(rotVec.x * Constants.MOUSE_SENSITIVITY, rotVec.y * Constants.MOUSE_SENSITIVITY, 0);
 		}
 		
-		entity.incRotation(0.0f, 0.05f, 0.0f);
+		entity.incRotation(0.0f, 0.13f, 0.0f);
 		
 		/*
 		 * party mode

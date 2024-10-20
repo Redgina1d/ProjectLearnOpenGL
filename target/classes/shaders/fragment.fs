@@ -5,6 +5,7 @@ in vec3 fragNormal;
 in vec3 fragPos;
 in vec3 surfaceNormal;
 in vec3 toLightVector;
+in vec3 toCameraVector;
 
 out vec4 fragColour;
 
@@ -20,6 +21,8 @@ uniform sampler2D textureSampler;
 uniform vec3 ambientLight;
 uniform Material material;
 uniform vec3 lightColour;
+uniform float shineDamper;
+uniform float reflectivity;
 
 vec4 ambientC;
 vec4 diffuseC;
@@ -45,6 +48,15 @@ void main() {
 	float nDot1 = dot(unitNormal, unitLightVector);
 	float brightness = max(nDot1, 0.0);
 	vec3 diffuse = brightness * lightColour;
+	
+	vec3 unitVecToCam = normalize(toCameraVector);
+	vec3 lightDir = -unitLightVector;
+	vec3 reflectedLightDir = reflect(lightDir, unitNormal);
+	
+	float specFactor = dot(reflectedLightDir, unitVecToCam);
+	specFactor = max(specFactor, 0.0);
+	float dampedFactor = pow(specFactor, shineDamper);
+	vec3 finSpec =  dampedFactor * lightColour;
 
 	if(material.hasTexture == 1) {
 		ambientC = texture(textureSampler, fragTextureCoord);
@@ -52,7 +64,7 @@ void main() {
 		ambientC = material.ambient + material.specular + material.diffuse + material.reflectance;
 	}
 
-	fragColour = vec4(diffuse, 1.0) * ambientC * vec4(ambientLight, 1);
+	fragColour = vec4(diffuse, 1.0) * ambientC * vec4(ambientLight, 1) + vec4(finSpec, 1.0);
 }
 
 

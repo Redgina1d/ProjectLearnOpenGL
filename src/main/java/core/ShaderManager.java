@@ -77,7 +77,11 @@ public class ShaderManager {
 	}
 	
 	public void setUniform(String unifname, float val) {
+		if (uniforms.get(unifname) == null) {
+			System.err.println("blah");
+		}
 		GL20.glUniform1f(uniforms.get(unifname), val);
+		
 	}
 	
 	public void createVertShader(String shaderCode) throws Exception {

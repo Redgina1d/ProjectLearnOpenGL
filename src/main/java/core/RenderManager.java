@@ -8,6 +8,7 @@ import org.lwjgl.opengl.GL30;
 
 import core.entity.Entity;
 import core.entity.Light;
+import core.entity.Texture;
 import core.utils.Constants;
 import core.utils.Transformation;
 import core.utils.Utils;
@@ -37,6 +38,9 @@ public class RenderManager {
 		shader.createMaterialUniform("material");
 		shader.createUniform("lightPosition");
 		shader.createUniform("lightColour");
+		//shader.createUniform("reflectivity");
+		shader.createUniform("shineDamper");
+		
 	}
 	
 	public void loadLight(Light light) {
@@ -44,7 +48,14 @@ public class RenderManager {
 		shader.setUniform("lightColour", light.getColor());
 	}
 	
+	public void loadShineVars(float damper, float reflect) {
+		shader.setUniform("shineDamper", damper);
+		//shader.setUniform("reflectivity", reflect);
+	}
+	
 	public void render(Entity entity, Camera cam) {
+		
+		Texture tex = entity.getModel().getTexture();
 		clear();
 		shader.bind();
 		shader.setUniform("textureSampler", 0);
@@ -54,6 +65,7 @@ public class RenderManager {
 		shader.setUniform("material", entity.getModel().getMaterial());
 		shader.setUniform("ambientLight", Constants.AMB_LIGHT);
 		
+		
 		GL30.glBindVertexArray(entity.getModel().getId());
 		
 		GL20.glEnableVertexAttribArray(0);
@@ -61,6 +73,10 @@ public class RenderManager {
 		GL20.glEnableVertexAttribArray(2);
 		
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+		
+		loadShineVars(tex.getShineDamper(), tex.getReflectivity());
+		
+		
 		
 		// Setup tex filters
         GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MIN_FILTER, GL20.GL_NEAREST);
