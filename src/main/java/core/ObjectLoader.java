@@ -203,7 +203,7 @@ public class ObjectLoader {
 			
 			buffer = STBImage.stbi_load(filename, w, h, c, 4);
 			if(buffer == null)
-				throw new Exception("Image File " + filename + " canst not beload'd. Cause: " + STBImage.stbi_failure_reason());
+				throw new Exception("Image File " + filename + " cant be loaded. Cause: " + STBImage.stbi_failure_reason());
 			
 			width = w.get();
 			height = h.get();

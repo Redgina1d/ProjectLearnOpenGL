@@ -22,6 +22,6 @@ public class Constants {
 	
 	public static final Vector4f DEF_COLOR = new Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
 	
-	public static Vector3f AMB_LIGHT = new Vector3f(0.5f, 0.5f, 0.5f);
+	public static Vector3f AMB_LIGHT = new Vector3f(0.3f, 0.3f, 0.3f);
 
 }

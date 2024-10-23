@@ -1,6 +1,9 @@
 package test;
 
 
+import java.util.LinkedList;
+import java.util.Random;
+
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
@@ -20,7 +23,7 @@ import core.utils.Constants;
 
 public class TestGame implements ILogic {
 	
-	private float r = 0.3f;
+	private float r = 0.0f;
 	private float g = 0.3f;
 	private float b = 0.3f;
 	private float a = 0.0f;
@@ -35,7 +38,7 @@ public class TestGame implements ILogic {
 	private final ObjectLoader loader;
 	private final WindowManager window;
 	
-	private Entity entity;
+	private LinkedList<Entity> allEntities;
 	private Camera cam;
 	private Light light;
 	
@@ -49,7 +52,8 @@ public class TestGame implements ILogic {
 		cam = new Camera();
 		camInc = new Vector3f(0, 0, 0);
 		//camRot = new Vector3f(0, 0, 0);
-		light = new Light(new Vector3f(0,5,5), new Vector3f(3.0f,8.0f,6.0f));
+		light = new Light(new Vector3f(0,0,0), new Vector3f(2.2f,2.2f,2.2f));
+		allEntities = new LinkedList<Entity>();
 		
 	}
 	
@@ -58,23 +62,41 @@ public class TestGame implements ILogic {
 	@Override
 	public void init() throws Exception {
 		
+		Random random = new Random();
+		
 		renderer.init();
 
 		
-		Model model = loader.loadOBJModel("uv_sphere");
-		
-		model.setTexture(new Texture(loader.loadTexture("C:/Users/VICTUS/eclipse-workspace/ProjectLearnOpenGL/src/main/resources/textures/sky.png")));
-		entity = new Entity(model, new Vector3f(1, 0, -1), new Vector3f(0, 0, 0), 1);
-		r = 0.0f;
-		g += 0.0f;
-		b += 0.0f;
-		
-		Texture tex = entity.getModel().getTexture();
-		tex.setShineDamper(20);
-		tex.setReflectivity(1);
+		Model cubeModel = loader.loadOBJModel("tr_cube_2");
+		cubeModel.setTexture(new Texture(loader.loadTexture(Constants.DIR + "/src/main/resources/textures/white.png")));
 		
 		
+		
+		//gen params
+		for (int i = 0; i < 300; i++) {
+			float x = 0;
+			float z = 0;
+			if(i == 0) {
+				x = 0;
+				z = 0;
+			} else {
+				x = allEntities.get(i-1).getPos().x + 2;
+				z = allEntities.get(i-1).getPos().z + 2;
+			}
+			
+
+
+			Entity ent = new Entity(cubeModel, new Vector3f(x, 0, z), new Vector3f(0,0,0), 1);
+			allEntities.add(ent);
+			
+		}		
 	}
+	
+	/*
+	 * Texture tex = allEntities.get(i).getModel().getTexture();
+			tex.setShineDamper(20);
+			tex.setReflectivity(1);
+	 */
 
 	@Override
 	public void input() {
@@ -107,7 +129,9 @@ public class TestGame implements ILogic {
 			cam.moveRotation(rotVec.x * Constants.MOUSE_SENSITIVITY, rotVec.y * Constants.MOUSE_SENSITIVITY, 0);
 		}
 		
-		entity.incRotation(0.0f, 0.13f, 0.0f);
+
+		
+		//entity.incRotation(0.0f, 0.1f, 0.1f);
 		
 		/*
 		 * party mode
@@ -174,7 +198,8 @@ public class TestGame implements ILogic {
 			window.setResize(true);
 		}
 		window.setClearColour(r, g, b, a);
-		renderer.render(entity, cam);
+		renderer.renderList(allEntities, cam);
+		
 		//renderer.render(entity2);
 	}
 

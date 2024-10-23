@@ -1,6 +1,8 @@
 package core;
 
 
+import java.util.LinkedList;
+
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
@@ -53,11 +55,54 @@ public class RenderManager {
 		//shader.setUniform("reflectivity", reflect);
 	}
 	
-	public void render(Entity entity, Camera cam) {
-		
-		Texture tex = entity.getModel().getTexture();
+	public void renderList(LinkedList<Entity> entList, Camera cam) {
 		clear();
 		shader.bind();
+		for (int i = 0; i < entList.size(); i++) {
+			Entity entity = entList.get(i);
+			Texture tex = entity.getModel().getTexture();
+			shader.setUniform("textureSampler", 0);
+			shader.setUniform("transformationMatrix", Transformation.createTransformationMatrix(entity));
+			shader.setUniform("projMatrix", window.updateProjMatrix());
+			shader.setUniform("viewMatrix", Transformation.getViewMatrix(cam));
+			shader.setUniform("material", entity.getModel().getMaterial());
+			shader.setUniform("ambientLight", Constants.AMB_LIGHT);
+			
+			
+			GL30.glBindVertexArray(entity.getModel().getId());
+			
+			GL20.glEnableVertexAttribArray(0);
+			GL20.glEnableVertexAttribArray(1);
+			GL20.glEnableVertexAttribArray(2);
+			
+			GL13.glActiveTexture(GL13.GL_TEXTURE0);
+			
+			loadShineVars(tex.getShineDamper(), tex.getReflectivity());
+			
+			
+			
+			// Setup tex filters
+	        GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MIN_FILTER, GL20.GL_NEAREST);
+	        GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAG_FILTER, GL20.GL_NEAREST);
+	        
+	        // Setup "wrap" parameters, to make texture render correctly on repeating objects (idk what they did mean by this)
+	        //GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_S, GL20.GL_REPEAT);
+	        //GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_T, GL20.GL_REPEAT);
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, entity.getModel().getTexture().getId());
+			GL11.glDrawElements(GL11.GL_TRIANGLES, entity.getModel().getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
+			
+			GL20.glDisableVertexAttribArray(0);
+			GL20.glDisableVertexAttribArray(1);
+			GL20.glDisableVertexAttribArray(2);
+			
+			GL30.glBindVertexArray(0);
+		}
+	}
+	
+	public void renderSole(Entity entity, Camera cam) {
+		clear();
+		shader.bind();
+		Texture tex = entity.getModel().getTexture();
 		shader.setUniform("textureSampler", 0);
 		shader.setUniform("transformationMatrix", Transformation.createTransformationMatrix(entity));
 		shader.setUniform("projMatrix", window.updateProjMatrix());
