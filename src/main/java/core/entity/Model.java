@@ -3,6 +3,7 @@ package core.entity;
 public class Model {
 	
 	private int id;
+	private int[] ids;
 	private int vertexCount;
 	private Material material;
 	
@@ -20,14 +21,34 @@ public class Model {
 	
 	public Model(Model model, Texture texture) {
 		this.id = model.getId();
+		this.ids = model.getIds();
 		this.vertexCount = model.getVertexCount();
 		this.material = model.getMaterial();
 		this.material.setTexture(texture);
 	}
+	
+	public Model(int[] ids, int vertexCount) {
+		this.ids = ids;
+		this.vertexCount = vertexCount;
+		this.material = new Material();
+	}
+	
+	public Model(int[] id, int vertexCount, Texture texture) {
+		this.ids = ids;
+		this.vertexCount = vertexCount;
+		this.material = new Material(texture);
+	}
+	
+	
 
 	public int getId() {
 		return id;
 	}
+	
+	public int[] getIds() {
+		return ids;
+	}
+	
 	public int getVertexCount() {
 		return vertexCount;
 	}

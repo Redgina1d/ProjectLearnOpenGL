@@ -68,11 +68,13 @@ public class TestGame implements ILogic {
 
 		
 		Model cubeModel = loader.loadOBJModel("tr_cube_2");
-		cubeModel.setTexture(new Texture(loader.loadTexture(Constants.DIR + "/src/main/resources/textures/white.png")));
+		cubeModel.setTexture(new Texture(loader.loadTexture(Constants.DIR + "/src/main/resources/textures/sky.png")));
 		
-		
+		Entity ent = new Entity(cubeModel, new Vector3f(0, 0, 0), new Vector3f(0,0,0), 1);
+		allEntities.add(ent);
 		
 		//gen params
+		/*
 		for (int i = 0; i < 300; i++) {
 			float x = 0;
 			float z = 0;
@@ -89,7 +91,8 @@ public class TestGame implements ILogic {
 			Entity ent = new Entity(cubeModel, new Vector3f(x, 0, z), new Vector3f(0,0,0), 1);
 			allEntities.add(ent);
 			
-		}		
+		}
+		*/	
 	}
 	
 	/*
@@ -198,7 +201,7 @@ public class TestGame implements ILogic {
 			window.setResize(true);
 		}
 		window.setClearColour(r, g, b, a);
-		renderer.renderList(allEntities, cam);
+		renderer.renderEntity(allEntities, cam);
 		
 		//renderer.render(entity2);
 	}

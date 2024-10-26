@@ -1,15 +1,21 @@
 package core.entity;
 
+
 public class Texture {
 	
 	private int id;
 	
+	private int[] ids;
+	
 	private float shineDamper = 1.0f;
 	private float reflectivity = 1.0f;
 	
-
 	public Texture(int id) {
 		this.id = id;
+	}
+	
+	public Texture(int[] ids) {
+		this.ids = ids;
 	}
 
 	public int getId() {

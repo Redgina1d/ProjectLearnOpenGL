@@ -1,12 +1,12 @@
 package core;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import java.util.List;
@@ -14,6 +14,8 @@ import java.util.List;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.PointerBuffer;
 import org.lwjgl.opengl.GL11;
 
 import org.lwjgl.opengl.GL15;
@@ -21,8 +23,10 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
 
 import core.entity.Model;
+import core.entity.Texture;
 import core.utils.Utils;
 
 public class ObjectLoader {
@@ -30,6 +34,16 @@ public class ObjectLoader {
 	private List<Integer> vaos = new ArrayList<>();
 	private List<Integer> vbos = new ArrayList<>();
 	private List<Integer> texs = new ArrayList<>();
+	
+	public Model loadOBJModel (String modelF, String texF){
+		Model mod = loadOBJModel(modelF);
+		try {
+			mod.setTexture(new Texture(loadTexture(texF)));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return mod;
+	}
 	
 	public Model loadOBJModel(String fileName) {
 		List<String> lines = Utils.readAllLines(fileName);
@@ -193,20 +207,28 @@ public class ObjectLoader {
 		return new Model(id, indices.length);
 	}
 	
-	public int loadTexture(String filename) throws Exception {
+    private static ByteBuffer readFileToBuffer(String filePath) throws IOException {
+        byte[] fileBytes = Files.readAllBytes(Paths.get(filePath));
+        ByteBuffer buffer = BufferUtils.createByteBuffer(fileBytes.length);
+        buffer.put(fileBytes).flip();
+        return buffer;
+    }
+
+	//
+	public int loadTexture(String way) throws Exception {
 		int width, height;
 		ByteBuffer buffer;
 		try(MemoryStack stack = MemoryStack.stackPush()) {
 			IntBuffer w = stack.mallocInt(1);
 			IntBuffer h = stack.mallocInt(1);
 			IntBuffer c = stack.mallocInt(1);
-			
-			buffer = STBImage.stbi_load(filename, w, h, c, 4);
+			buffer = STBImage.stbi_load(way, w, h, c, 4);
 			if(buffer == null)
-				throw new Exception("Image File " + filename + " cant be loaded. Cause: " + STBImage.stbi_failure_reason());
+				throw new Exception("Image File " + way + " can't be loaded. Cause: " + STBImage.stbi_failure_reason());
 			
 			width = w.get();
 			height = h.get();
+			
 		}
 		int id = GL11.glGenTextures();
 		texs.add(id);
@@ -216,6 +238,53 @@ public class ObjectLoader {
 		GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
 		STBImage.stbi_image_free(buffer);
 		return id;
+	}
+
+	//mad shit
+	public int[][] loadGIF(String way) throws Exception {
+		int frameCount = 0;
+		int width = 0, height = 0, channels;
+		ByteBuffer buffer = null;
+		int[] delArr = null;
+		try(MemoryStack stack = MemoryStack.stackPush()) {
+			IntBuffer x = stack.mallocInt(1); // w
+            IntBuffer y = stack.mallocInt(1); // h
+            IntBuffer comp = stack.mallocInt(1);
+            IntBuffer d = stack.mallocInt(1); // dubious piece
+            PointerBuffer delays = MemoryUtil.memAllocPointer(d.capacity());
+            for (int i = 0; i < delays.capacity(); i++) {
+                delays.put(i, delays.get(i));
+            }
+            IntBuffer channelsBuf = stack.mallocInt(1);
+            ByteBuffer gifBuffer = readFileToBuffer(way);
+            buffer = STBImage.stbi_load_gif_from_memory(gifBuffer, delays, x, y, comp, channelsBuf, 4);
+			if(buffer == null)
+				throw new Exception("GIF " + way + " can't be loaded. Cause: " + STBImage.stbi_failure_reason());
+			width = x.get();
+			height = y.get();
+			channels = channelsBuf.get();
+			frameCount = buffer.limit() / (width * height * channels);
+			//another dubious piece
+			for (int i = 0; i < d.limit(); i++) {
+				delArr[i] = d.get(i);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		int ids[][] = new int[][] {};
+		for (int i = 0; i < frameCount; i++) {
+			ids[0][i] = GL11.glGenTextures();
+			texs.add(ids[0][i]);
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, ids[0][i]);
+			GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
+			GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
+			GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
+		}
+		for (int i = 0; i < delArr.length; i++) {
+			ids[1][i] = delArr[i];
+		}
+		STBImage.stbi_image_free(buffer);
+		return ids;
 	}
 	
 	private int createVAO() {
