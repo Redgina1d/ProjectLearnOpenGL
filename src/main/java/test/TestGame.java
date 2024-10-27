@@ -1,7 +1,7 @@
 package test;
 
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.Random;
 
 import org.joml.Vector2f;
@@ -38,7 +38,7 @@ public class TestGame implements ILogic {
 	private final ObjectLoader loader;
 	private final WindowManager window;
 	
-	private LinkedList<Entity> allEntities;
+	private ArrayList<Entity> allEntities;
 	private Camera cam;
 	private Light light;
 	
@@ -52,12 +52,10 @@ public class TestGame implements ILogic {
 		cam = new Camera();
 		camInc = new Vector3f(0, 0, 0);
 		//camRot = new Vector3f(0, 0, 0);
-		light = new Light(new Vector3f(0,0,0), new Vector3f(2.2f,2.2f,2.2f));
-		allEntities = new LinkedList<Entity>();
+		light = new Light(new Vector3f(0,2,-2), new Vector3f(2.2f,2.2f,2.2f));
+		allEntities = new ArrayList<Entity>();
 		
 	}
-	
-
 
 	@Override
 	public void init() throws Exception {
@@ -68,7 +66,10 @@ public class TestGame implements ILogic {
 
 		
 		Model cubeModel = loader.loadOBJModel("tr_cube_2");
-		cubeModel.setTexture(new Texture(loader.loadTexture(Constants.DIR + "/src/main/resources/textures/sky.png")));
+		cubeModel.setTexture(new Texture(loader.loadImg(Constants.DIR + "/src/main/resources/textures/the_kot.gif")));
+		Texture tex = cubeModel.getTexture();
+		tex.setShineDamper(25);
+		tex.setReflectivity(0);
 		
 		Entity ent = new Entity(cubeModel, new Vector3f(0, 0, 0), new Vector3f(0,0,0), 1);
 		allEntities.add(ent);

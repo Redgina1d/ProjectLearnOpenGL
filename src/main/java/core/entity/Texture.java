@@ -1,25 +1,27 @@
 package core.entity;
 
+import java.util.ArrayList;
 
+// can be common image or GIF
 public class Texture {
-	
-	private int id;
-	
-	private int[] ids;
+
+	private ArrayList<Integer> ids = new ArrayList<Integer>();
 	
 	private float shineDamper = 1.0f;
 	private float reflectivity = 1.0f;
 	
-	public Texture(int id) {
-		this.id = id;
+	public Texture(int[] data) {
+		for (int i = 0; i < data.length; i++) {
+			ids.add(data[i]);
+		}
 	}
 	
-	public Texture(int[] ids) {
-		this.ids = ids;
+	public Texture(int id) {
+		ids.add(id);
 	}
 
-	public int getId() {
-		return id;
+	public ArrayList<Integer> getIds() {
+		return ids;
 	}
 
 	public float getShineDamper() {

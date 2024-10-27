@@ -38,7 +38,11 @@ public class ObjectLoader {
 	public Model loadOBJModel (String modelF, String texF){
 		Model mod = loadOBJModel(modelF);
 		try {
-			mod.setTexture(new Texture(loadTexture(texF)));
+			if (texF.toLowerCase().endsWith(".gif")) {
+				mod.setTexture(new Texture(loadGIF(texF)));
+			} else {
+				mod.setTexture(new Texture(loadImg(texF)));
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -215,7 +219,7 @@ public class ObjectLoader {
     }
 
 	//
-	public int loadTexture(String way) throws Exception {
+	public int loadImg(String way) throws Exception {
 		int width, height;
 		ByteBuffer buffer;
 		try(MemoryStack stack = MemoryStack.stackPush()) {
@@ -241,11 +245,10 @@ public class ObjectLoader {
 	}
 
 	//mad shit
-	public int[][] loadGIF(String way) throws Exception {
+	public int[] loadGIF(String way) throws Exception {
 		int frameCount = 0;
 		int width = 0, height = 0, channels;
 		ByteBuffer buffer = null;
-		int[] delArr = null;
 		try(MemoryStack stack = MemoryStack.stackPush()) {
 			IntBuffer x = stack.mallocInt(1); // w
             IntBuffer y = stack.mallocInt(1); // h
@@ -264,24 +267,17 @@ public class ObjectLoader {
 			height = y.get();
 			channels = channelsBuf.get();
 			frameCount = buffer.limit() / (width * height * channels);
-			//another dubious piece
-			for (int i = 0; i < d.limit(); i++) {
-				delArr[i] = d.get(i);
-			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		int ids[][] = new int[][] {};
+		int ids[] = new int[] {};
 		for (int i = 0; i < frameCount; i++) {
-			ids[0][i] = GL11.glGenTextures();
-			texs.add(ids[0][i]);
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, ids[0][i]);
+			ids[i] = GL11.glGenTextures();
+			texs.add(ids[i]);
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, ids[i]);
 			GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
 			GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
 			GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
-		}
-		for (int i = 0; i < delArr.length; i++) {
-			ids[1][i] = delArr[i];
 		}
 		STBImage.stbi_image_free(buffer);
 		return ids;

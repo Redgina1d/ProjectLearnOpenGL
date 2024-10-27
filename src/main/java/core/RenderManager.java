@@ -1,6 +1,6 @@
 package core;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
@@ -19,8 +19,6 @@ public class RenderManager {
 	
 	private final WindowManager window;
 	public ShaderManager shader;
-	
-	private int currFrame;
 	
 	public RenderManager() {
 		window = Launcher.getWindow();
@@ -56,14 +54,13 @@ public class RenderManager {
 		//shader.setUniform("reflectivity", reflect);
 	}
 	
-	public void renderEntity(LinkedList<Entity> entList, Camera cam) {
+	public void renderEntity(ArrayList<Entity> entList, Camera cam) {
 		clear();
 		shader.bind();
 		for (int i = 0; i < entList.size(); i++) {
 			renderEntity(entList.get(i), cam);
 		}
-	}
-	
+	}	
 	
 	public void renderEntity(Entity entity, Camera cam) {
 		clear();
@@ -76,30 +73,34 @@ public class RenderManager {
 		shader.setUniform("material", entity.getModel().getMaterial());
 		shader.setUniform("ambientLight", Constants.AMB_LIGHT);
 		
-		
 		GL30.glBindVertexArray(entity.getModel().getId());
 		
 		GL20.glEnableVertexAttribArray(0);
 		GL20.glEnableVertexAttribArray(1);
 		GL20.glEnableVertexAttribArray(2);
 		
-		
-		
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		
-		loadShineVars(tex.getShineDamper(), tex.getReflectivity());
-		
-		
-		
 		// Setup tex filters
-        GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MIN_FILTER, GL20.GL_NEAREST);
+		GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MIN_FILTER, GL20.GL_NEAREST);
         GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAG_FILTER, GL20.GL_NEAREST);
         
-        // Setup "wrap" parameters, to make texture render correctly on repeating objects (idk what they did mean by this)
-        //GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_S, GL20.GL_REPEAT);
-        //GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_T, GL20.GL_REPEAT);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, entity.getModel().getTexture().getId());
-		GL11.glDrawElements(GL11.GL_TRIANGLES, entity.getModel().getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
+        // Setup "wrap" parameters, to make texture render correctly on repeating objects
+        /*
+        GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_S, GL20.GL_REPEAT);
+        GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_T, GL20.GL_REPEAT);
+        GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_R, GL20.GL_REPEAT);
+        */
+        
+        if (tex.getIds().size() > 1) {
+        	System.err.println("fuck");
+        } else {
+        	loadShineVars(tex.getShineDamper(), tex.getReflectivity());
+            // binding & drawing
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex.getIds().get(0));
+    		GL11.glDrawElements(GL11.GL_TRIANGLES, entity.getModel().getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
+        }
+        
 		
 		GL20.glDisableVertexAttribArray(0);
 		GL20.glDisableVertexAttribArray(1);
@@ -107,6 +108,37 @@ public class RenderManager {
 		
 		GL30.glBindVertexArray(0);
 	}
+	/*
+	private int currFrame = -1;
+	public void startGIFRender(Entity ent) {
+		ArrayList<Integer> frames = ent.getModel().getTexture().getIds();
+		Texture tex = ent.getModel().getTexture();
+		Thread asyncThread = new Thread() {
+			public void run() {
+				while (currFrame != -1) {
+					if (currFrame == frames.size()) {
+						currFrame = 0;
+					} else {
+						try {
+							System.out.println(currFrame);
+							wait(200L);
+							System.out.println(currFrame);
+							currFrame++;
+							loadShineVars(tex.getShineDamper(), tex.getReflectivity());
+					        // binding & drawing
+					        GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex.getIds().get(currFrame));
+							GL11.glDrawElements(GL11.GL_TRIANGLES, ent.getModel().getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+					
+				}
+			}
+		};
+		asyncThread.run();
+	}
+	*/
 
 	public void clear() {
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
