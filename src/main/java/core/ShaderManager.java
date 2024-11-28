@@ -29,16 +29,8 @@ public class ShaderManager {
 	public void createUniform(String unifName) throws Exception {
 		int unifLoc = GL20.glGetUniformLocation(progID, unifName);
 		if(unifLoc < 0)
-			throw new Exception("Couldn't find unif " + unifName);
+			throw new Exception("Can't find unif " + unifName);
 		uniforms.put(unifName, unifLoc);
-	}
-	
-	public void createMaterialUniform(String unifName) throws Exception {
-		createUniform(unifName + ".ambient");
-		createUniform(unifName + ".diffuse");
-		createUniform(unifName + ".specular");
-		createUniform(unifName + ".hasTexture");
-		createUniform(unifName + ".reflectance");
 	}
 	
 	public void setUniform(String unifname, Matrix4f val) {
@@ -47,20 +39,10 @@ public class ShaderManager {
 					val.get(stack.mallocFloat(16)));
 		}
 	}
-	
-	public void setUniform(String unifName, Material material) {
-		setUniform(unifName + ".ambient", material.getAmbCol());
-		setUniform(unifName + ".diffuse", material.getDifCol());
-		setUniform(unifName + ".specular", material.getSpecCol());
-		setUniform(unifName + ".hasTexture", material.hasTexture() ? 1 : 0);
-		setUniform(unifName + ".reflectance", material.getReflect());
-	}
-	
 	public void setUniform(String unifname, Vector4f value) {
 		GL20.glUniform4f(uniforms.get(unifname), value.x, value.y, value.z, value.w);
 	}
 	
-	// Unif with ambient light?
 	public void setUniform(String unifname, Vector3f value) {
 		GL20.glUniform3f(uniforms.get(unifname), value.x, value.y, value.z);
 	}

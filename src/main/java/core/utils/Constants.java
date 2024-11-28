@@ -17,11 +17,13 @@ public class Constants {
 	public static final String DIR = Paths.get("").toAbsolutePath().toString();
 	
 	public static final float MOUSE_SENSITIVITY = 0.5f;
-	public static final float CAM_STEP = 0.01f;
+	public static final float CAM_STEP = 0.05f;
     
 	
 	public static final Vector4f DEF_COLOR = new Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
 	
-	public static Vector3f AMB_LIGHT = new Vector3f(0.3f, 0.3f, 0.3f);
+	public static Vector3f AMB_LIGHT = new Vector3f(0.34f, 0.3f, 0.5f);
+	
+	public final Vector3f ZERO_VEC3F = new Vector3f(0,0,0);
 
 }

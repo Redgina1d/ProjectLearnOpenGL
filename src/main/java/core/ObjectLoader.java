@@ -26,6 +26,7 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
 import core.entity.Model;
+import core.entity.ModelData;
 import core.entity.Texture;
 import core.utils.Utils;
 
@@ -36,7 +37,7 @@ public class ObjectLoader {
 	private List<Integer> texs = new ArrayList<>();
 	
 	public Model loadOBJModel (String modelF, String texF){
-		Model mod = loadOBJModel(modelF);
+		Model mod = loadOBJModel(loadOBJModel(modelF));
 		try {
 			if (texF.toLowerCase().endsWith(".gif")) {
 				mod.setTexture(new Texture(loadGIF(texF)));
@@ -49,13 +50,24 @@ public class ObjectLoader {
 		return mod;
 	}
 	
-	public Model loadOBJModel(String fileName) {
+	public Model loadOBJModel(ModelData data) {
+		int id = createVAO();
+		storeIndicesBuffer(data.getIndices());
+		storeDataInAttrList(0, 3, data.getVertices());
+		storeDataInAttrList(1, 2, data.getTextureCoords());
+		storeDataInAttrList(2, 3, data.getNormals());
+		unbind();
+		return new Model(id, data.getIndices().length);
+	}
+
+	public ModelData loadOBJModel(String fileName) {
+		
 		List<String> lines = Utils.readAllLines(fileName);
 		
-		List<Vector3f> vertices = new ArrayList<>();
-		List<Vector3f> normals = new ArrayList<>();
-		List<Vector2f> textures = new ArrayList<>();
-		List<Vector3i> faces = new ArrayList<>();
+		List<Vertex> vertices = new ArrayList<Vertex>();
+		List<Vector2f> textures = new ArrayList<Vector2f>();
+		List<Vector3f> normals = new ArrayList<Vector3f>();
+		List<Integer> indices = new ArrayList<>();
 		
 		for(String line : lines) {
 			String[] tokens = line.split("\\s+");
@@ -67,7 +79,8 @@ public class ObjectLoader {
 						Float.parseFloat(tokens[2]),
 						Float.parseFloat(tokens[3])
 				);
-				vertices.add(vertxs);
+				Vertex newVert = new Vertex(vertices.size(), vertxs);
+				vertices.add(newVert);
 				break;
 			case "vt":
 				// VERTEX TEXTURES
@@ -75,6 +88,7 @@ public class ObjectLoader {
 						Float.parseFloat(tokens[1]),
 						Float.parseFloat(tokens[2])
 				);
+				
 				textures.add(texs);
 				break;
 			case "vn":
@@ -89,82 +103,118 @@ public class ObjectLoader {
 			case "f":
 				// FACES
 				for(int i = 1; i < tokens.length; i++){
-				    processFace(tokens[i], faces);
-
+					String[] currentLine = line.split(" ");
+					String[] vertex1 = currentLine[1].split("/");
+					String[] vertex2 = currentLine[2].split("/");
+					String[] vertex3 = currentLine[3].split("/");
+					processVertex(vertex1, vertices, indices);
+					processVertex(vertex2, vertices, indices);
+					processVertex(vertex3, vertices, indices);
 				}
 				break;
 			default:
 				break;
 			}
 		}
-		List<Integer> indices = new ArrayList<>();
+		removeUnusedVertices(vertices);
 		float[] verticesArr = new float[vertices.size() * 3];
-		int i = 0;
-		for(Vector3f pos : vertices) {
-			verticesArr[i * 3] = pos.x;
-			verticesArr[i * 3 + 1] = pos.y;
-			verticesArr[i * 3 + 2] = pos.z;
-			i++;
-		}
-		
 		float[] texCoordArr = new float[vertices.size() * 2];
 		float[] normalArr = new float[vertices.size() * 3];
+		float furthest = convertDataToArrays(vertices, textures, normals, verticesArr,
+				texCoordArr, normalArr);
+		int[] indicesArr = convertIndicesListToArray(indices);
 		
-		for(Vector3i face : faces) {
-			processVertex(face.x, face.y, face.z, textures, normals, indices, texCoordArr, normalArr);
+		return new ModelData(verticesArr, texCoordArr, normalArr, indicesArr, furthest);
+	}
+
+
+	private static int[] convertIndicesListToArray(List<Integer> indices) {
+		int[] indicesArray = new int[indices.size()];
+		for (int i = 0; i < indicesArray.length; i++) {
+			indicesArray[i] = indices.get(i);
 		}
-		
-		int[] indicesArr = indices.stream().mapToInt((Integer v) -> v).toArray();
-		
-		/* Foolish attempt to fix cube malformness
-		int[] indicesArr = new int[faces.size()];
-		
-		for (int j = 0; j < faces.size(); j++) {
-			System.out.println("loop: " + j + " face: " + faces.get(j).x + " sizeFace: " + faces.size() + " sizeIndices " + indicesArr.length);
-			indicesArr[j] = faces.get(j).x;
+		return indicesArray;
+	}
+
+	
+	private static float convertDataToArrays(List<Vertex> vertices, List<Vector2f> textures,
+			List<Vector3f> normals, float[] verticesArray, float[] texturesArray,
+			float[] normalsArray) {
+		float furthestPoint = 0;
+		for (int i = 0; i < vertices.size(); i++) {
+			Vertex currentVertex = vertices.get(i);
+			if (currentVertex.getLength() > furthestPoint) {
+				furthestPoint = currentVertex.getLength();
+			}
+			Vector3f position = currentVertex.getPosition();
+			Vector2f textureCoord = textures.get(currentVertex.getTextureIndex());
+			Vector3f normalVector = normals.get(currentVertex.getNormalIndex());
+			
+			verticesArray[i * 3] = position.x;
+			verticesArray[i * 3 + 1] = position.y;
+			verticesArray[i * 3 + 2] = position.z;
+			
+			texturesArray[i * 2] = textureCoord.x;
+			texturesArray[i * 2 + 1] = 1 - textureCoord.y;
+			
+			normalsArray[i * 3] = normalVector.x;
+			normalsArray[i * 3 + 1] = normalVector.y;
+			normalsArray[i * 3 + 2] = normalVector.z;
 		}
-		
-		
-		int[] indicesArr = new int[]{
-	            0, 1, 3, 3, 1, 2,
-	            8, 10, 11, 9, 8, 11,
-	            12, 13, 7, 5, 12, 7,
-	            14, 15, 6, 4, 14, 6,
-	            16, 18, 19, 17, 16, 19,
-	            4, 6, 7, 5, 4, 7,
-		};
-		*/
-		
-		/* another foolish attempt
-		
-		
-		float[] verticesArr = new float[] {
-	            -0.5f, 0.5f, 0.5f,
-	            -0.5f, -0.5f, 0.5f,
-	            0.5f, -0.5f, 0.5f,
-	            0.5f, 0.5f, 0.5f,
-	            -0.5f, 0.5f, -0.5f,
-	            0.5f, 0.5f, -0.5f,
-	            -0.5f, -0.5f, -0.5f,
-	            0.5f, -0.5f, -0.5f,
-	            -0.5f, 0.5f, -0.5f,
-	            0.5f, 0.5f, -0.5f,
-	            -0.5f, 0.5f, 0.5f,
-	            0.5f, 0.5f, 0.5f,
-	            0.5f, 0.5f, 0.5f,
-	            0.5f, -0.5f, 0.5f,
-	            -0.5f, 0.5f, 0.5f,
-	            -0.5f, -0.5f, 0.5f,
-	            -0.5f, -0.5f, -0.5f,
-	            0.5f, -0.5f, -0.5f,
-	            -0.5f, -0.5f, 0.5f,
-	            0.5f, -0.5f, 0.5f,
-		};
-		*/
-		
-		return loadModel(verticesArr, texCoordArr, normalArr, indicesArr);
+		return furthestPoint;
+	}
+
+	
+	
+	private static void processVertex(String[] vertex, 
+			List<Vertex> vertices, List<Integer> indices) {
+		int index = Integer.parseInt(vertex[0]) - 1;
+		Vertex currVert = vertices.get(index);
+		int textureIndex = Integer.parseInt(vertex[1]) - 1;
+		int normalIndex = Integer.parseInt(vertex[2]) - 1;
+		if (!currVert.isSet()) {
+			currVert.setTextureIndex(textureIndex);
+			currVert.setNormalIndex(normalIndex);
+			indices.add(index);
+		} else {
+			dealWithAlreadyProcessedVertex(currVert, textureIndex, normalIndex, indices, vertices);
+		}
+
 	}
 	
+	private static void removeUnusedVertices(List<Vertex> vertices){
+		for(Vertex vertex:vertices){
+			if(!vertex.isSet()){
+				vertex.setTextureIndex(0);
+				vertex.setNormalIndex(0);
+			}
+		}
+	}
+
+	
+	private static void dealWithAlreadyProcessedVertex(Vertex previousVertex, int newTextureIndex,
+			int newNormalIndex, List<Integer> indices, List<Vertex> vertices) {
+		if (previousVertex.hasSameTextureAndNormal(newTextureIndex, newNormalIndex)) {
+			indices.add(previousVertex.getIndex());
+		} else {
+			Vertex anotherVertex = previousVertex.getDuplicateVertex();
+			if (anotherVertex != null) {
+				dealWithAlreadyProcessedVertex(anotherVertex, newTextureIndex, newNormalIndex,
+						indices, vertices);
+			} else {
+				Vertex duplicateVertex = new Vertex(vertices.size(), previousVertex.getPosition());
+				duplicateVertex.setTextureIndex(newTextureIndex);
+				duplicateVertex.setNormalIndex(newNormalIndex);
+				previousVertex.setDuplicateVertex(duplicateVertex);
+				vertices.add(duplicateVertex);
+				indices.add(duplicateVertex.getIndex());
+			}
+		}
+	}
+
+	
+	
+	/*
 	private static void processVertex(int pos, int texCoord, int normal, List<Vector2f> texCoordList,
 									List<Vector3f> normalList, List<Integer> indicesList,
 									float[] texCoordArr, float[] normalArr) {
@@ -183,6 +233,7 @@ public class ObjectLoader {
 			normalArr[pos * 3 + 2] = normalVec.z;
 		}
 	}
+	*/
 			
 	
 	private static void processFace(String token, List<Vector3i> faces) {
@@ -201,15 +252,7 @@ public class ObjectLoader {
 		faces.add(facesVec);
 	}
 	
-	public Model loadModel(float[] vertices, float[] textureCoords, float[] normals, int[] indices) {
-		int id = createVAO();
-		storeIndicesBuffer(indices);
-		storeDataInAttrList(0, 3, vertices);
-		storeDataInAttrList(1, 2, textureCoords);
-		storeDataInAttrList(2, 3, normals);
-		unbind();
-		return new Model(id, indices.length);
-	}
+	
 	
     private static ByteBuffer readFileToBuffer(String filePath) throws IOException {
         byte[] fileBytes = Files.readAllBytes(Paths.get(filePath));
@@ -245,7 +288,7 @@ public class ObjectLoader {
 	}
 
 	//mad shit
-	public int[] loadGIF(String way) throws Exception {
+	public ArrayList<Integer> loadGIF(String way) throws Exception {
 		int frameCount = 0;
 		int width = 0, height = 0, channels;
 		ByteBuffer buffer = null;
@@ -270,11 +313,11 @@ public class ObjectLoader {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		int ids[] = new int[] {};
+		ArrayList<Integer> ids = new ArrayList<Integer>();
 		for (int i = 0; i < frameCount; i++) {
-			ids[i] = GL11.glGenTextures();
-			texs.add(ids[i]);
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, ids[i]);
+			ids.add(GL11.glGenTextures());
+			texs.add(ids.get(i));
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, ids.get(i));
 			GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
 			GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
 			GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);

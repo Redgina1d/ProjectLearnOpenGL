@@ -9,98 +9,125 @@ import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
+import core.Area;
 import core.Camera;
+import core.EngineManager;
 import core.ILogic;
-import core.MouseInput;
 import core.ObjectLoader;
-import core.RenderManager;
 import core.WindowManager;
 import core.entity.Entity;
 import core.entity.Light;
 import core.entity.Model;
 import core.entity.Texture;
 import core.utils.Constants;
+import core.utils.MouseInput;
+import render.EntityRenderer;
+import render.GUI2DRenderer;
+import render.Renderer;
 
 public class TestGame implements ILogic {
 	
-	private float r = 0.0f;
-	private float g = 0.3f;
-	private float b = 0.3f;
-	private float a = 0.0f;
-	
-	private float d1 = 0.003f;
-	private float d2 = 0.003f;
-	private float d3 = 0.003f;
-	
-	//private int dir = 1;
-	
-	private final RenderManager renderer;
+	private final EntityRenderer renderer;
+	private final GUI2DRenderer guiRenderer;
 	private final ObjectLoader loader;
 	private final WindowManager window;
 	
 	private ArrayList<Entity> allEntities;
+
+	private ArrayList<Entity> allGUIs;
+	private ArrayList<Area> areas;
 	private Camera cam;
 	private Light light;
-	
+
 	Vector3f camInc;
-	//Vector3f camRot;
+	
+	Entity gui;
 	
 	TestGame() {
-		renderer = new RenderManager();
+		renderer = new EntityRenderer();
+		guiRenderer = new GUI2DRenderer();
 		window = Launcher.getWindow();
 		loader = new ObjectLoader();
 		cam = new Camera();
 		camInc = new Vector3f(0, 0, 0);
 		//camRot = new Vector3f(0, 0, 0);
-		light = new Light(new Vector3f(0,2,-2), new Vector3f(2.2f,2.2f,2.2f));
+		light = new Light(new Vector3f(50.0f,40.5f,-60.0f), new Vector3f(1.9f,1.9f,1.2f));
 		allEntities = new ArrayList<Entity>();
-		
+		allGUIs = new ArrayList<Entity>();
+		areas = new ArrayList<Area>(); 
 	}
 
 	@Override
 	public void init() throws Exception {
 		
-		Random random = new Random();
-		
 		renderer.init();
+		guiRenderer.init();
 
+		Area domain = new Area(new Vector3f(1.1f, 2.2f, 3.3f), new Vector3f(5.0f, 4.0f, 7.0f));
 		
-		Model cubeModel = loader.loadOBJModel("tr_cube_2");
-		cubeModel.setTexture(new Texture(loader.loadImg(Constants.DIR + "/src/main/resources/textures/the_kot.gif")));
-		Texture tex = cubeModel.getTexture();
-		tex.setShineDamper(25);
-		tex.setReflectivity(0);
+		Model sunModel = loader.loadOBJModel("uv_sphere", Constants.DIR + "/src/main/resources/textures/YELLOW.png");
+		Model cubeModel = loader.loadOBJModel("uv_sphere", Constants.DIR + "/src/main/resources/textures/touchgrass.png");
+		Model surfaceModel = loader.loadOBJModel("detailed_surface", Constants.DIR + "/src/main/resources/textures/green.png");
+		Model skyboxModel = loader.loadOBJModel("skybox", Constants.DIR + "/src/main/resources/textures/sky.png");
+		Model pointModel = loader.loadOBJModel("cubepoint", Constants.DIR + "/src/main/resources/textures/red.png");
+		Model point2Model = loader.loadOBJModel("cubepoint", Constants.DIR + "/src/main/resources/textures/white.png");
+		Model bricks = loader.loadOBJModel("Cube", Constants.DIR + "/src/main/resources/textures/brick_wall.png");
 		
-		Entity ent = new Entity(cubeModel, new Vector3f(0, 0, 0), new Vector3f(0,0,0), 1);
+		Model guiModel = loader.loadOBJModel("gui", Constants.DIR + "/src/main/resources/textures/brick_wall.png");
+		
+		pointModel.getTexture().setShineDamper(-1);
+		point2Model.getTexture().setShineDamper(-1);
+		sunModel.getTexture().setShineDamper(-1);
+		surfaceModel.getTexture().setShineDamper(-1);
+		cubeModel.getTexture().setShineDamper(2);
+		skyboxModel.getTexture().setShineDamper(-1);
+		bricks.getTexture().setShineDamper(-1);
+		guiModel.getTexture().setShineDamper(-1);
+		
+		guiModel.getMaterial().setLightAffected(false);
+		sunModel.getMaterial().setLightAffected(false);
+		pointModel.getMaterial().setLightAffected(false);
+		point2Model.getMaterial().setLightAffected(false);
+		cubeModel.getMaterial().setLightAffected(true);
+		skyboxModel.getMaterial().setLightAffected(false);
+		
+		areas.add(domain);
+		
+		Entity p1 = new Entity(pointModel, domain.p1, new Vector3f(0, 0, 0), 0.4f);
+		Entity p2 = new Entity(point2Model, domain.getPointByNumber(2), new Vector3f(0, 0, 0), 0.2f);
+		Entity p3 = new Entity(point2Model, domain.getPointByNumber(3), new Vector3f(0, 0, 0), 0.2f);
+		Entity p4 = new Entity(point2Model, domain.getPointByNumber(4), new Vector3f(0, 0, 0), 0.2f);
+		Entity p5 = new Entity(point2Model, domain.getPointByNumber(5), new Vector3f(0, 0, 0), 0.2f);
+		Entity p6 = new Entity(point2Model, domain.getPointByNumber(6), new Vector3f(0, 0, 0), 0.2f);
+		Entity p7 = new Entity(point2Model, domain.getPointByNumber(7), new Vector3f(0, 0, 0), 0.2f);
+		Entity p8 = new Entity(pointModel, domain.p8, new Vector3f(0, 0, 0), 0.4f);
+		Entity ent = new Entity(cubeModel, new Vector3f(0, 3, -3), new Vector3f(0, 0, 0), 1);
+		Entity skyEntity = new Entity(skyboxModel, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), 10);
+		Entity sun = new Entity(sunModel, new Vector3f(50.0f,40.5f,-60.0f), new Vector3f(0, 0, 0), 3);
+		Entity surface = new Entity(surfaceModel, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), 1);
+		Entity brick = new Entity(bricks, new Vector3f(4.0f,10.5f,-3.0f), new Vector3f(0, 0, 0), 1);
+		gui = new Entity(guiModel, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), 1);
+		
+		
+		allEntities.add(skyEntity);
+		allEntities.add(p1);
+		allEntities.add(p8);
 		allEntities.add(ent);
+		allEntities.add(surface);
+		allEntities.add(sun);
+		allEntities.add(p2);
+		allEntities.add(p3);
+		allEntities.add(p4);
+		allEntities.add(p5);
+		allEntities.add(p6);
+		allEntities.add(p7);
+		allEntities.add(brick);
 		
-		//gen params
-		/*
-		for (int i = 0; i < 300; i++) {
-			float x = 0;
-			float z = 0;
-			if(i == 0) {
-				x = 0;
-				z = 0;
-			} else {
-				x = allEntities.get(i-1).getPos().x + 2;
-				z = allEntities.get(i-1).getPos().z + 2;
-			}
-			
+		allGUIs.add(gui);
+		
 
-
-			Entity ent = new Entity(cubeModel, new Vector3f(x, 0, z), new Vector3f(0,0,0), 1);
-			allEntities.add(ent);
-			
-		}
-		*/	
 	}
-	
-	/*
-	 * Texture tex = allEntities.get(i).getModel().getTexture();
-			tex.setShineDamper(20);
-			tex.setReflectivity(1);
-	 */
+
 
 	@Override
 	public void input() {
@@ -111,88 +138,34 @@ public class TestGame implements ILogic {
 			camInc.z = 1;
 		
 		if(window.isKeyPressed(GLFW.GLFW_KEY_A))
-			camInc.x = 1;
-		if(window.isKeyPressed(GLFW.GLFW_KEY_D))
 			camInc.x = -1;
+		if(window.isKeyPressed(GLFW.GLFW_KEY_D))
+			camInc.x = 1;
 		
 		if(window.isKeyPressed(GLFW.GLFW_KEY_SPACE))
 			camInc.y = 1;
 		if(window.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT))
 			camInc.y = -1;
+		
 	}
 
 	@Override
 	public void update(float interval, MouseInput mouseInput) {
 		renderer.loadLight(light);
 		
+		//System.out.println(areas.getFirst().isInArea(cam.getPos()));
 		
 		cam.movePos(camInc.x * Constants.CAM_STEP, camInc.y * Constants.CAM_STEP, camInc.z * Constants.CAM_STEP);
+		gui.setPos(cam.getPos().x, cam.getPos().y, cam.getPos().z);
+		
+		//allEntities.get(0).setPos(cam.getPos().x, cam.getPos().y, cam.getPos().z + 2.0f);
+		//System.out.println(allEntities.get(0).getPos().y);
+		//System.out.println(allEntities.get(0).getName());
 		
 		if(mouseInput.isRightButtonPress()) {
 			Vector2f rotVec = mouseInput.getDisVec();
 			cam.moveRotation(rotVec.x * Constants.MOUSE_SENSITIVITY, rotVec.y * Constants.MOUSE_SENSITIVITY, 0);
 		}
-		
-
-		
-		//entity.incRotation(0.0f, 0.1f, 0.1f);
-		
-		/*
-		 * party mode
-		Constants.AMB_LIGHT.x += d1;
-		Constants.AMB_LIGHT.y += d2;
-		Constants.AMB_LIGHT.z += d3;
-		if(Constants.AMB_LIGHT.x >= 0.2f)
-			Constants.AMB_LIGHT.y += d2;
-		if(Constants.AMB_LIGHT.y >= 0.2f)
-			Constants.AMB_LIGHT.z += d3;
-        if(Constants.AMB_LIGHT.x >= 1.0f || Constants.AMB_LIGHT.x <= 0.0f)
-            d1 = -d1;
-        if(Constants.AMB_LIGHT.y >= 1.0f || Constants.AMB_LIGHT.y <= 0.0f)
-            d2 = -d2;
-        if(Constants.AMB_LIGHT.z >= 1.0f || Constants.AMB_LIGHT.z <= 0.0f)
-            d3 = -d3;
-		
-		r += d1;
-		g += d2;
-		b += d3;
-		if(r >= 0.2f)
-			g += d2;
-		if(g >= 0.2f)
-			b += d3;
-        if(r >= 1.0f || r <= 0.0f)
-            d1 = -d1;
-        if(g >= 1.0f || g <= 0.0f)
-            d2 = -d2;
-        if(b >= 1.0f || b <= 0.0f)
-            d3 = -d3;
-        */
-
-        /*
-		if(entity.getPos().x < -1.5f)
-			dir = -dir;
-		if(entity.getPos().x > 1.5f) {
-			entity.getPos().x = 1.5f;
-			dir = -dir;
-		}
-		entity.getPos().x -= 0.004f * dir;
-		entity.getPos().y -= 0.004f * dir;
-		*/
-
-		
-		/*
-		Random random = new Random();
-		Random random2 = new Random();
-		Random random3 = new Random();
-		
-		r = (random.nextFloat() * 2.0f) - 1.0f;
-		g = (random2.nextFloat() * 2.0f) - 1.0f;
-		b = (random3.nextFloat() * 2.0f) - 1.0f;
-		*/
-		
-		
-		
-		
 	}
 
 	@Override
@@ -201,73 +174,16 @@ public class TestGame implements ILogic {
 			GL11.glViewport(0, 0, 5, 5);
 			window.setResize(true);
 		}
-		window.setClearColour(r, g, b, a);
 		renderer.renderEntity(allEntities, cam);
+		//guiRenderer.renderEntity(allGUIs, cam);
 		
-		//renderer.render(entity2);
 	}
 
 	@Override
 	public void cleanup() {
 		renderer.clear();
+		guiRenderer.clear();
 		loader.cleanup();
 		window.cleanup();
 	}
-
 }
-
-/* cube
-float[] vertices = new float[] {
-            -0.5f, 0.5f, 0.5f,
-            -0.5f, -0.5f, 0.5f,
-            0.5f, -0.5f, 0.5f,
-            0.5f, 0.5f, 0.5f,
-            -0.5f, 0.5f, -0.5f,
-            0.5f, 0.5f, -0.5f,
-            -0.5f, -0.5f, -0.5f,
-            0.5f, -0.5f, -0.5f,
-            -0.5f, 0.5f, -0.5f,
-            0.5f, 0.5f, -0.5f,
-            -0.5f, 0.5f, 0.5f,
-            0.5f, 0.5f, 0.5f,
-            0.5f, 0.5f, 0.5f,
-            0.5f, -0.5f, 0.5f,
-            -0.5f, 0.5f, 0.5f,
-            -0.5f, -0.5f, 0.5f,
-            -0.5f, -0.5f, -0.5f,
-            0.5f, -0.5f, -0.5f,
-            -0.5f, -0.5f, 0.5f,
-            0.5f, -0.5f, 0.5f,
-};
-float[] texCoords = new float[]{
-            0.0f, 0.0f,
-            0.0f, 0.5f,
-            0.5f, 0.5f,
-            0.5f, 0.0f,
-            0.0f, 0.0f,
-            0.5f, 0.0f,
-            0.0f, 0.5f,
-            0.5f, 0.5f,
-            0.0f, 0.5f,
-            0.5f, 0.5f,
-            0.0f, 1.0f,
-            0.5f, 1.0f,
-            0.0f, 0.0f,
-            0.0f, 0.5f,
-            0.5f, 0.0f,
-            0.5f, 0.5f,
-            0.5f, 0.0f,
-            1.0f, 0.0f,
-            0.5f, 0.5f,
-            1.0f, 0.5f,
-};
-int[] indices = new int[]{
-            0, 1, 3, 3, 1, 2,
-            8, 10, 11, 9, 8, 11,
-            12, 13, 7, 5, 12, 7,
-            14, 15, 6, 4, 14, 6,
-            16, 18, 19, 17, 16, 19,
-            4, 6, 7, 5, 4, 7,
-};
-
-*/

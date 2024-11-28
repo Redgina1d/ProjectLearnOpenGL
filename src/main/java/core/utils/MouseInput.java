@@ -1,4 +1,4 @@
-package core;
+package core.utils;
 
 import org.joml.Vector2d;
 import org.joml.Vector2f;

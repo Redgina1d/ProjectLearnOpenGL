@@ -10,10 +10,8 @@ public class Texture {
 	private float shineDamper = 1.0f;
 	private float reflectivity = 1.0f;
 	
-	public Texture(int[] data) {
-		for (int i = 0; i < data.length; i++) {
-			ids.add(data[i]);
-		}
+	public Texture(ArrayList<Integer> ids) {
+		this.ids = ids;
 	}
 	
 	public Texture(int id) {

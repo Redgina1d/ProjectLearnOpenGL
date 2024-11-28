@@ -47,6 +47,7 @@ public class Entity {
 	public Vector3f getPos() {
 		return pos;
 	}
+	
 
 	public static Vector3f getRotation() {
 		return rotation;

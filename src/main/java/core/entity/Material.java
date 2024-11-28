@@ -9,6 +9,7 @@ public class Material {
 	private Vector4f ambCol, difCol, specCol;
 	private float reflect;
 	private Texture texture;
+	private boolean lightAffected;
 	
 	public Material() {
 		this.ambCol = Constants.DEF_COLOR;
@@ -16,6 +17,7 @@ public class Material {
 		this.specCol = Constants.DEF_COLOR;
 		this.texture = null;
 		this.reflect = 0;
+		this.lightAffected = true;
 	}
 	
 	public Material(Vector4f color, float reflect) {
@@ -76,6 +78,14 @@ public class Material {
 
 	public void setTexture(Texture texture) {
 		this.texture = texture;
+	}
+	
+	public void setLightAffected(boolean m) {
+		this.lightAffected = m;
+	}
+	
+	public boolean isLightAffected() {
+		return lightAffected;
 	}
 	
 	public boolean hasTexture() {

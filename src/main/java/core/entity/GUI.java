@@ -1,20 +1,15 @@
 package core.entity;
 
-import org.joml.Vector3f;
+import core.ShaderManager;
 
 public class GUI {
+
+	private Entity base;
+	private ShaderManager shader;
+	//private int priority;
 	
-	private Vector3f pos;
-	private static Vector3f rot;
-	private float scale;
-	private Texture tex;
-	
-	public GUI(Texture tex, Vector3f pos, Vector3f rot, float scale) {
-		this.tex = tex;
-		this.pos = pos;
-		this.rot = rot;
-		this.scale = scale;
-		
+	public GUI(Entity base) {
+		this.base = base;
 	}
 
 }

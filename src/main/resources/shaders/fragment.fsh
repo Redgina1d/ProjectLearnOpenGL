@@ -9,36 +9,14 @@ in vec3 toCameraVector;
 
 out vec4 fragColour;
 
-struct Material {
-	vec4 ambient;
-	vec4 diffuse;
-	vec4 specular;
-	int hasTexture;
-	float reflectance;
-};
-
 uniform sampler2D textureSampler;
 uniform vec3 ambientLight;
-uniform Material material;
 uniform vec3 lightColour;
 uniform float shineDamper;
 uniform float reflectivity;
+uniform bool lightAffected;
 
-vec4 ambientC;
-vec4 diffuseC;
-vec4 specularC;
-
-void setupColours(Material material, vec2 texCoords) {
-	if(material.hasTexture == 1) {
-		ambientC = texture(textureSampler, texCoords);
-		diffuseC = ambientC;
-		specularC = ambientC;
-	} else {
-		ambientC = material.ambient;
-		diffuseC = material.diffuse;
-		specularC = material.specular;
-	}
-}
+vec4 texColor;
 
 void main() {
 
@@ -58,13 +36,20 @@ void main() {
 	float dampedFactor = pow(specFactor, shineDamper);
 	vec3 finSpec =  dampedFactor * lightColour;
 
-	if(material.hasTexture == 1) {
-		ambientC = texture(textureSampler, fragTextureCoord);
-	} else {
-		ambientC = material.ambient + material.specular + material.diffuse + material.reflectance;
+	texColor = texture(textureSampler, fragTextureCoord);
+	if (texColor.a < 0.5) {
+		discard;
 	}
 
-	fragColour = vec4(diffuse, 1.0) * ambientC * vec4(ambientLight, 1) + vec4(finSpec, 1.0);
+	if(lightAffected) {
+		if(shineDamper == -1 || reflectivity == -1) {
+			fragColour = texColor * vec4(diffuse, 1.0) + (vec4(ambientLight, 1) / 2) + (texColor / 10);
+		} else {
+			fragColour = vec4(diffuse, 1.0) * texColor + vec4(finSpec, 1.0) + ((vec4(ambientLight, 1) / 2) + (texColor / 10));
+		}
+	} else {
+		fragColour = texColor;
+	}
 }
 
 

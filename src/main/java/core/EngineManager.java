@@ -1,12 +1,11 @@
 package core;
 
-
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 
 import core.utils.Constants;
+import core.utils.MouseInput;
 import test.Launcher;
-
 
 public class EngineManager {
 	public static final long NANOSECOND = 1000000000L;
@@ -30,6 +29,7 @@ public class EngineManager {
 		window.init();
 		gameLogic.init();
 		mouseInput.init();
+		
 	}
 	
 	public void start() throws Exception {

@@ -2,14 +2,14 @@ package core.entity;
 
 import org.joml.Vector3f;
 
-public class VFX2D {
+public class VFX_2D {
 	
 	private Vector3f pos;
-	private static Vector3f rot;
+	private Vector3f rot;
 	private float scale;
 	private Texture tex;
 	
-	public VFX2D(Texture tex, Vector3f pos, Vector3f rot, float scale) {
+	public VFX_2D(Texture tex, Vector3f pos, Vector3f rot, float scale) {
 		this.tex = tex;
 		this.pos = pos;
 		this.rot = rot;
@@ -30,12 +30,12 @@ public class VFX2D {
 		this.pos.z += pos.z;
 	}
 
-	public static Vector3f getRot() {
+	public Vector3f getRot() {
 		return rot;
 	}
 
-	public static void setRot(Vector3f rot) {
-		VFX2D.rot = rot;
+	public void setRot(Vector3f rot) {
+		this.rot = rot;
 	}
 	
 	public void addRot(Vector3f rot) {

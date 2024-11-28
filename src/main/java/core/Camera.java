@@ -18,19 +18,20 @@ public class Camera {
 
 	// // // // //
 	public void movePos(float x, float y, float z) {
-		if (z != 0) {
-			
-			pos.z += (float) Math.sin(Math.toRadians(rotation.y + 90)) * 1.0f * z;
-			pos.x += (float) Math.sin(Math.toRadians(rotation.y + 90)) * x;
-		}
-		
-		if (x != 0) {
-			
-			pos.z += (float) Math.sin(Math.toRadians(rotation.y - 90)) * -1.0f * z;
-			pos.x += (float) Math.sin(Math.toRadians(rotation.y - 90)) * x;
-		}
-		
-		pos.y += y;
+	    // Перемещение вперёд/назад
+	    if (z != 0) {
+	        pos.x += (float) Math.sin(Math.toRadians(rotation.y)) * -1.0f * z;
+	        pos.z += (float) Math.cos(Math.toRadians(rotation.y)) * z;
+	    }
+
+	    // Перемещение влево/вправо
+	    if (x != 0) {
+	        pos.x += (float) Math.sin(Math.toRadians(rotation.y - 90)) * -1.0f * x;
+	        pos.z += (float) Math.cos(Math.toRadians(rotation.y - 90)) * x;
+	    }
+
+	    // Перемещение по оси Y
+	    pos.y += y;
 	}
 	
 	public void setPos(float x, float y, float z) {

@@ -1,6 +1,8 @@
 package core.utils;
 
+import org.joml.Matrix3f;
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 
@@ -9,7 +11,7 @@ import core.entity.Entity;
 
 public class Transformation {
 	
-	public static Matrix4f createTransformationMatrix(Entity entity) {
+	public static Matrix4f createTransformMatrix(Entity entity) {
 		Matrix4f mtrx = new Matrix4f();
 		mtrx.identity().translate(entity.getPos()).
 			rotateX((float) Math.toRadians(Entity.getRotation().x)).
@@ -66,7 +68,6 @@ public class Transformation {
 		 */
 	}
 	
-	// i dont understand this piece
 	public static Matrix4f getViewMatrix(Camera cam) {
 		Vector3f pos = cam.getPos();
 		Vector3f rot = cam.getRotation();

@@ -1,5 +1,7 @@
 package core;
 
+import core.utils.MouseInput;
+
 public interface ILogic {
 
 	void init() throws Exception;
