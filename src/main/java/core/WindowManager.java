@@ -20,6 +20,7 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
 import org.lwjgl.system.MemoryUtil;
 
 import core.utils.Constants;
@@ -102,6 +103,7 @@ public class WindowManager {
 			}
 		});
 		
+		
 		if(maximized)
 			GLFW.glfwMaximizeWindow(window);
 		else {
@@ -119,6 +121,7 @@ public class WindowManager {
 		
 		GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GL11.glDepthFunc(GL11.GL_LESS);
 		GL11.glEnable(GL11.GL_STENCIL_TEST);
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glEnable(GL11.GL_SMOOTH);

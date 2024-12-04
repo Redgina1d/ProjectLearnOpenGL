@@ -6,6 +6,7 @@ in vec3 fragPos;
 in vec3 surfaceNormal;
 in vec3 toLightVector;
 in vec3 toCameraVector;
+in float visibility;
 
 out vec4 fragColour;
 
@@ -15,6 +16,7 @@ uniform vec3 lightColour;
 uniform float shineDamper;
 uniform float reflectivity;
 uniform bool lightAffected;
+uniform vec3 skyColour;
 
 vec4 texColor;
 
@@ -44,11 +46,14 @@ void main() {
 	if(lightAffected) {
 		if(shineDamper == -1 || reflectivity == -1) {
 			fragColour = texColor * vec4(diffuse, 1.0) + (vec4(ambientLight, 1) / 2) + (texColor / 10);
+			fragColour = mix(vec4(skyColour, 1.0), fragColour, visibility);
 		} else {
 			fragColour = vec4(diffuse, 1.0) * texColor + vec4(finSpec, 1.0) + ((vec4(ambientLight, 1) / 2) + (texColor / 10));
+			fragColour = mix(vec4(skyColour, 1.0), fragColour, visibility);
 		}
 	} else {
 		fragColour = texColor;
+		fragColour = mix(vec4(skyColour, 1.0), fragColour, visibility);
 	}
 }
 

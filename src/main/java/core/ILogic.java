@@ -4,6 +4,7 @@ import core.utils.MouseInput;
 
 public interface ILogic {
 
+
 	void init() throws Exception;
 	
 	void input();

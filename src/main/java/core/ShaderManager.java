@@ -59,9 +59,6 @@ public class ShaderManager {
 	}
 	
 	public void setUniform(String unifname, float val) {
-		if (uniforms.get(unifname) == null) {
-			System.err.println("blah");
-		}
 		GL20.glUniform1f(uniforms.get(unifname), val);
 		
 	}
@@ -118,5 +115,9 @@ public class ShaderManager {
 		unbind();
 		if(progID != 0)
 			GL20.glDeleteProgram(progID);
+	}
+	
+	public int getProgId() {
+		return progID;
 	}
 }

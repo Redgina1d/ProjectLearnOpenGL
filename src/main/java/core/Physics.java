@@ -5,7 +5,7 @@ import org.joml.Vector3f;
 public abstract class Physics {
 
 	private float g = -9.81f;
-
+	private float airResistance = 0.1f;
 
 	public float getNormalForce(float mass, float g, Vector3f suppNormal) {
 		float root = (float) Math.sqrt((double) ((suppNormal.x * suppNormal.x) + (suppNormal.y * suppNormal.y) + (suppNormal.z * suppNormal.z)));

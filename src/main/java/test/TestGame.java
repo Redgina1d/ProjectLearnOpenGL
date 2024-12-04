@@ -2,6 +2,8 @@ package test;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import org.joml.Vector2f;
@@ -14,6 +16,7 @@ import core.Camera;
 import core.EngineManager;
 import core.ILogic;
 import core.ObjectLoader;
+import core.ShaderManager;
 import core.WindowManager;
 import core.entity.Entity;
 import core.entity.Light;
@@ -23,7 +26,6 @@ import core.utils.Constants;
 import core.utils.MouseInput;
 import render.EntityRenderer;
 import render.GUI2DRenderer;
-import render.Renderer;
 
 public class TestGame implements ILogic {
 	
@@ -36,12 +38,20 @@ public class TestGame implements ILogic {
 
 	private ArrayList<Entity> allGUIs;
 	private ArrayList<Area> areas;
+	private ArrayList<Light> lights;
 	private Camera cam;
 	private Light light;
+	private Light lantern;
+	
+	private ShaderManager defShader;
+	private ShaderManager guiShader;
+    //private static ShaderManager currentShader;
 
 	Vector3f camInc;
 	
+	Entity ent;
 	Entity gui;
+	
 	
 	TestGame() {
 		renderer = new EntityRenderer();
@@ -52,16 +62,25 @@ public class TestGame implements ILogic {
 		camInc = new Vector3f(0, 0, 0);
 		//camRot = new Vector3f(0, 0, 0);
 		light = new Light(new Vector3f(50.0f,40.5f,-60.0f), new Vector3f(1.9f,1.9f,1.2f));
+		lantern = new Light(new Vector3f(0,0,0), new Vector3f(1.9f,1.9f,1.9f));
 		allEntities = new ArrayList<Entity>();
 		allGUIs = new ArrayList<Entity>();
+		lights = new ArrayList<Light>();
+		lights.add(lantern);
+		lights.add(light);
+		
 		areas = new ArrayList<Area>(); 
 	}
 
 	@Override
 	public void init() throws Exception {
 		
-		renderer.init();
-		guiRenderer.init();
+		defShader = new ShaderManager();
+		guiShader = new ShaderManager();
+		
+		
+		renderer.init(defShader);
+		guiRenderer.init(guiShader);
 
 		Area domain = new Area(new Vector3f(1.1f, 2.2f, 3.3f), new Vector3f(5.0f, 4.0f, 7.0f));
 		
@@ -79,7 +98,7 @@ public class TestGame implements ILogic {
 		point2Model.getTexture().setShineDamper(-1);
 		sunModel.getTexture().setShineDamper(-1);
 		surfaceModel.getTexture().setShineDamper(-1);
-		cubeModel.getTexture().setShineDamper(2);
+		cubeModel.getTexture().setShineDamper(1);
 		skyboxModel.getTexture().setShineDamper(-1);
 		bricks.getTexture().setShineDamper(-1);
 		guiModel.getTexture().setShineDamper(-1);
@@ -101,7 +120,7 @@ public class TestGame implements ILogic {
 		Entity p6 = new Entity(point2Model, domain.getPointByNumber(6), new Vector3f(0, 0, 0), 0.2f);
 		Entity p7 = new Entity(point2Model, domain.getPointByNumber(7), new Vector3f(0, 0, 0), 0.2f);
 		Entity p8 = new Entity(pointModel, domain.p8, new Vector3f(0, 0, 0), 0.4f);
-		Entity ent = new Entity(cubeModel, new Vector3f(0, 3, -3), new Vector3f(0, 0, 0), 1);
+		ent = new Entity(cubeModel, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), 0.1f);
 		Entity skyEntity = new Entity(skyboxModel, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), 10);
 		Entity sun = new Entity(sunModel, new Vector3f(50.0f,40.5f,-60.0f), new Vector3f(0, 0, 0), 3);
 		Entity surface = new Entity(surfaceModel, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), 1);
@@ -112,7 +131,7 @@ public class TestGame implements ILogic {
 		allEntities.add(skyEntity);
 		allEntities.add(p1);
 		allEntities.add(p8);
-		allEntities.add(ent);
+		//allEntities.add(ent);
 		allEntities.add(surface);
 		allEntities.add(sun);
 		allEntities.add(p2);
@@ -124,6 +143,7 @@ public class TestGame implements ILogic {
 		allEntities.add(brick);
 		
 		allGUIs.add(gui);
+		
 		
 
 	}
@@ -148,17 +168,18 @@ public class TestGame implements ILogic {
 			camInc.y = -1;
 		
 	}
+	
+	//int m = 1;
 
 	@Override
 	public void update(float interval, MouseInput mouseInput) {
-		renderer.loadLight(light);
 		
-		//System.out.println(areas.getFirst().isInArea(cam.getPos()));
+		System.out.println();
 		
 		cam.movePos(camInc.x * Constants.CAM_STEP, camInc.y * Constants.CAM_STEP, camInc.z * Constants.CAM_STEP);
-		gui.setPos(cam.getPos().x, cam.getPos().y, cam.getPos().z);
+		//gui.setPos(cam.getPos().x, cam.getPos().y, cam.getPos().z);
 		
-		//allEntities.get(0).setPos(cam.getPos().x, cam.getPos().y, cam.getPos().z + 2.0f);
+		allEntities.get(0).setPos(cam.getPos().x, cam.getPos().y, cam.getPos().z);
 		//System.out.println(allEntities.get(0).getPos().y);
 		//System.out.println(allEntities.get(0).getName());
 		
@@ -174,15 +195,29 @@ public class TestGame implements ILogic {
 			GL11.glViewport(0, 0, 5, 5);
 			window.setResize(true);
 		}
-		renderer.renderEntity(allEntities, cam);
-		//guiRenderer.renderEntity(allGUIs, cam);
+		
+
+		
+		defShader.bind();
+		renderer.loadLight(light, defShader);
+		renderer.renderList(allEntities, cam, defShader);
+		defShader.unbind();
+		
+		//guiShader.bind();
+		//guiRenderer.renderList(allGUIs, cam, guiShader);
+		//guiShader.unbind();
+		
+		
+		
+		
 		
 	}
+	
 
 	@Override
 	public void cleanup() {
-		renderer.clear();
-		guiRenderer.clear();
+		renderer.cleanup(defShader);
+		guiRenderer.cleanup(guiShader);
 		loader.cleanup();
 		window.cleanup();
 	}
