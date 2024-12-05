@@ -6,7 +6,7 @@ public class Entity {
 	
 	private Model model;
 	private Vector3f pos;
-	private static Vector3f rotation;
+	private Vector3f rotation;
 	private float scale;
 	
 	public Entity(Model model, Vector3f pos, Vector3f rotation, float scale) {
@@ -49,7 +49,7 @@ public class Entity {
 	}
 	
 
-	public static Vector3f getRotation() {
+	public Vector3f getRotation() {
 		return rotation;
 	}
 

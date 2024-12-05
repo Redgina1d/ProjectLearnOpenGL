@@ -14,9 +14,9 @@ public class Transformation {
 	public static Matrix4f createTransformMatrix(Entity entity) {
 		Matrix4f mtrx = new Matrix4f();
 		mtrx.identity().translate(entity.getPos()).
-			rotateX((float) Math.toRadians(Entity.getRotation().x)).
-			rotateY((float) Math.toRadians(Entity.getRotation().y)).
-			rotateZ((float) Math.toRadians(Entity.getRotation().z)).
+			rotateX((float) Math.toRadians(entity.getRotation().x)).
+			rotateY((float) Math.toRadians(entity.getRotation().y)).
+			rotateZ((float) Math.toRadians(entity.getRotation().z)).
 			scale(entity.getScale());
 		return mtrx;
 		

@@ -180,6 +180,7 @@ public class TestGame implements ILogic {
 		//gui.setPos(cam.getPos().x, cam.getPos().y, cam.getPos().z);
 		
 		allEntities.get(0).setPos(cam.getPos().x, cam.getPos().y, cam.getPos().z);
+		allEntities.get(1).incRotation(0.01f, 0, 0);
 		//System.out.println(allEntities.get(0).getPos().y);
 		//System.out.println(allEntities.get(0).getName());
 		
@@ -200,7 +201,7 @@ public class TestGame implements ILogic {
 		
 		defShader.bind();
 		renderer.loadLight(light, defShader);
-		renderer.renderList(allEntities, cam, defShader);
+		renderer.renderList(allEntities, cam, defShader, window);
 		defShader.unbind();
 		
 		//guiShader.bind();

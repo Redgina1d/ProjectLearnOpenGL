@@ -21,7 +21,7 @@ import test.Launcher;
 
 public class EntityRenderer {
 	
-	WindowManager window = Launcher.getWindow();
+	
 	
 	public void init(ShaderManager shader) throws Exception {
 		shader.createVertShader(Utils.loadResource("/shaders/vertex.vsh"));
@@ -52,7 +52,7 @@ public class EntityRenderer {
 	
 	Vector3f f = new Vector3f(0.34f, 0.3f, 0.5f);
 
-	public void render(Entity ent, Camera cam, ShaderManager shader) {
+	public void render(Entity ent, Camera cam, ShaderManager shader, WindowManager window) {
 		shader.setUniform("textureSampler", 0);
 		shader.setUniform("transformationMatrix", Transformation.createTransformMatrix(ent));
 		shader.setUniform("projMatrix", window.updateProjMatrix());
@@ -95,10 +95,10 @@ public class EntityRenderer {
 	}
 	
 
-	public void renderList(ArrayList<Entity> entList, Camera cam, ShaderManager shader) {
+	public void renderList(ArrayList<Entity> entList, Camera cam, ShaderManager shader, WindowManager window) {
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		for (Entity entity : entList) {
-			render(entity, cam, shader);
+			render(entity, cam, shader, window);
 		}
 	}
 	

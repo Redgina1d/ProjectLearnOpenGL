@@ -13,6 +13,7 @@ public class Area {
 	public Vector3f p8;
 	
 	private Physics physics;
+	private Ambient ambient;
 	private Map<String, Integer> tags;
 	
 	
