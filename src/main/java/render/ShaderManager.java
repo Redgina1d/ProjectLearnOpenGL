@@ -1,15 +1,26 @@
-package core;
+package render;
 
+import java.lang.management.GarbageCollectorMXBean;
+import java.nio.FloatBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL31;
 import org.lwjgl.system.MemoryStack;
 
+import core.Camera;
+import core.WindowManager;
+import core.entity.Entity;
+import core.entity.Light;
 import core.entity.Material;
+import core.utils.Constants;
+import core.utils.Transformation;
 
 public class ShaderManager {
 	
@@ -17,7 +28,7 @@ public class ShaderManager {
 	public int vertShaderID, fragShaderID;
 	
 	private	final Map<String, Integer> uniforms;
-	
+
 	public ShaderManager() throws Exception {
 		progID = GL20.glCreateProgram();
 		if(progID == 0)
@@ -26,6 +37,9 @@ public class ShaderManager {
 		uniforms = new HashMap<>();
 	}
 	
+	
+	
+	
 	public void createUniform(String unifName) throws Exception {
 		int unifLoc = GL20.glGetUniformLocation(progID, unifName);
 		if(unifLoc < 0)
@@ -33,31 +47,34 @@ public class ShaderManager {
 		uniforms.put(unifName, unifLoc);
 	}
 	
+
+	// mat4f
 	public void setUniform(String unifname, Matrix4f val) {
 		try(MemoryStack stack = MemoryStack.stackPush()) {
 			GL20.glUniformMatrix4fv(uniforms.get(unifname), false,
 					val.get(stack.mallocFloat(16)));
 		}
 	}
+	// vec4f
 	public void setUniform(String unifname, Vector4f value) {
 		GL20.glUniform4f(uniforms.get(unifname), value.x, value.y, value.z, value.w);
 	}
-	
+	// vec3f
 	public void setUniform(String unifname, Vector3f value) {
 		GL20.glUniform3f(uniforms.get(unifname), value.x, value.y, value.z);
 	}
-	
+	// int
 	public void setUniform(String unifname, int val) {
 		GL20.glUniform1i(uniforms.get(unifname), val);
 	}
-	
+	// bool
 	public void setUniform(String unifname, boolean value) {
 		float res = 0;
 		if(value)
 			res = 1;
 		GL20.glUniform1f(uniforms.get(unifname), res);
 	}
-	
+	// float
 	public void setUniform(String unifname, float val) {
 		GL20.glUniform1f(uniforms.get(unifname), val);
 		

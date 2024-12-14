@@ -22,8 +22,7 @@ public class Constants {
 	
 	public static final Vector4f DEF_COLOR = new Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
 	
-	public static Vector3f AMB_LIGHT = new Vector3f(0.34f, 0.3f, 0.5f);
-	
-	public final Vector3f ZERO_VEC3F = new Vector3f(0,0,0);
+	public static Vector3f ambLight = new Vector3f(0.34f, 0.3f, 0.5f);
+	public static Vector3f skyColour = new Vector3f(0.34f, 0.3f, 0.5f);
 
 }

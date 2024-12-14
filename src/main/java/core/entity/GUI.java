@@ -1,6 +1,6 @@
 package core.entity;
 
-import core.ShaderManager;
+import render.ShaderManager;
 
 public class GUI {
 

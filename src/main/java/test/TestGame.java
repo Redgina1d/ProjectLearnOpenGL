@@ -16,7 +16,6 @@ import core.Camera;
 import core.EngineManager;
 import core.ILogic;
 import core.ObjectLoader;
-import core.ShaderManager;
 import core.WindowManager;
 import core.entity.Entity;
 import core.entity.Light;
@@ -26,11 +25,12 @@ import core.utils.Constants;
 import core.utils.MouseInput;
 import render.EntityRenderer;
 import render.GUI2DRenderer;
+import render.ShaderManager;
 
 public class TestGame implements ILogic {
 	
 	private final EntityRenderer renderer;
-	private final GUI2DRenderer guiRenderer;
+	//private final GUI2DRenderer guiRenderer;
 	private final ObjectLoader loader;
 	private final WindowManager window;
 	
@@ -41,11 +41,7 @@ public class TestGame implements ILogic {
 	private ArrayList<Light> lights;
 	private Camera cam;
 	private Light light;
-	private Light lantern;
-	
-	private ShaderManager defShader;
-	private ShaderManager guiShader;
-    //private static ShaderManager currentShader;
+
 
 	Vector3f camInc;
 	
@@ -55,18 +51,15 @@ public class TestGame implements ILogic {
 	
 	TestGame() {
 		renderer = new EntityRenderer();
-		guiRenderer = new GUI2DRenderer();
+		//guiRenderer = new GUI2DRenderer();
 		window = Launcher.getWindow();
 		loader = new ObjectLoader();
 		cam = new Camera();
 		camInc = new Vector3f(0, 0, 0);
-		//camRot = new Vector3f(0, 0, 0);
 		light = new Light(new Vector3f(50.0f,40.5f,-60.0f), new Vector3f(1.9f,1.9f,1.2f));
-		lantern = new Light(new Vector3f(0,0,0), new Vector3f(1.9f,1.9f,1.9f));
 		allEntities = new ArrayList<Entity>();
 		allGUIs = new ArrayList<Entity>();
 		lights = new ArrayList<Light>();
-		lights.add(lantern);
 		lights.add(light);
 		
 		areas = new ArrayList<Area>(); 
@@ -74,13 +67,9 @@ public class TestGame implements ILogic {
 
 	@Override
 	public void init() throws Exception {
-		
-		defShader = new ShaderManager();
-		guiShader = new ShaderManager();
-		
-		
-		renderer.init(defShader);
-		guiRenderer.init(guiShader);
+
+		renderer.init();
+		renderer.initRender(ent, cam, window, light);
 
 		Area domain = new Area(new Vector3f(1.1f, 2.2f, 3.3f), new Vector3f(5.0f, 4.0f, 7.0f));
 		
@@ -174,15 +163,10 @@ public class TestGame implements ILogic {
 	@Override
 	public void update(float interval, MouseInput mouseInput) {
 		
-		System.out.println();
-		
 		cam.movePos(camInc.x * Constants.CAM_STEP, camInc.y * Constants.CAM_STEP, camInc.z * Constants.CAM_STEP);
-		//gui.setPos(cam.getPos().x, cam.getPos().y, cam.getPos().z);
 		
 		allEntities.get(0).setPos(cam.getPos().x, cam.getPos().y, cam.getPos().z);
 		allEntities.get(1).incRotation(0.01f, 0, 0);
-		//System.out.println(allEntities.get(0).getPos().y);
-		//System.out.println(allEntities.get(0).getName());
 		
 		if(mouseInput.isRightButtonPress()) {
 			Vector2f rotVec = mouseInput.getDisVec();
@@ -197,28 +181,15 @@ public class TestGame implements ILogic {
 			window.setResize(true);
 		}
 		
+		renderer.renderList(allEntities, cam, window);
 
-		
-		defShader.bind();
-		renderer.loadLight(light, defShader);
-		renderer.renderList(allEntities, cam, defShader, window);
-		defShader.unbind();
-		
-		//guiShader.bind();
-		//guiRenderer.renderList(allGUIs, cam, guiShader);
-		//guiShader.unbind();
-		
-		
-		
-		
-		
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 	}
 	
 
 	@Override
 	public void cleanup() {
-		renderer.cleanup(defShader);
-		guiRenderer.cleanup(guiShader);
+		renderer.cleanup();
 		loader.cleanup();
 		window.cleanup();
 	}

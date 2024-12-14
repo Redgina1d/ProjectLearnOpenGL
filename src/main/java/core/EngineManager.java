@@ -8,6 +8,7 @@ import core.utils.MouseInput;
 import test.Launcher;
 
 public class EngineManager {
+	
 	public static final long NANOSECOND = 1000000000L;
 	public static final long FRAMERATE = 1000;
 	

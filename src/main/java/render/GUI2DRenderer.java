@@ -8,7 +8,6 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
 import core.Camera;
-import core.ShaderManager;
 import core.entity.Entity;
 import core.entity.Texture;
 import core.utils.Transformation;
@@ -17,8 +16,8 @@ import core.utils.Utils;
 public class GUI2DRenderer {
 
 	public void init(ShaderManager shader) throws Exception {
-		shader.createVertShader(Utils.loadResource("/shaders/gui2d_render_vert.vsh"));
-		shader.createFragShader(Utils.loadResource("/shaders/gui2d_render_frag.fsh"));
+		shader.createVertShader(Utils.loadResource("/shaders/gui2d.vsh"));
+		shader.createFragShader(Utils.loadResource("/shaders/gui2d.fsh"));
 		shader.link();
 		shader.createUniform("textureSampler");
 		shader.createUniform("transformationMatrix");
@@ -52,7 +51,7 @@ public class GUI2DRenderer {
 	
 
 	public void renderList(ArrayList<Entity> entList, Camera cam, ShaderManager shader) {
-		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+		
 		//GL11.glDisable(GL11.GL_DEPTH_TEST);
 		for (Entity entity : entList) {
 			render(entity, cam, shader);

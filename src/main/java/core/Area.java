@@ -102,6 +102,36 @@ public class Area {
 			return false;
 		}
 	}
+	public Vector3f getP1() {
+		return p1;
+	}
+	public void setP1(Vector3f p1) {
+		this.p1 = p1;
+	}
+	public Vector3f getP8() {
+		return p8;
+	}
+	public void setP8(Vector3f p8) {
+		this.p8 = p8;
+	}
+	public Physics getPhysics() {
+		return physics;
+	}
+	public void setPhysics(Physics physics) {
+		this.physics = physics;
+	}
+	public Ambient getAmbient() {
+		return ambient;
+	}
+	public void setAmbient(Ambient ambient) {
+		this.ambient = ambient;
+	}
+	public Map<String, Integer> getTags() {
+		return tags;
+	}
+	public void setTags(Map<String, Integer> tags) {
+		this.tags = tags;
+	}
 	
 	
 	

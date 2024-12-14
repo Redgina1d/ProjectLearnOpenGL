@@ -32,4 +32,37 @@ public class Ambient {
 		this.fog = fog;
 	}
 
+	public Vector3f getLight() {
+		return light;
+	}
+
+	public void setLight(Vector3f light) {
+		this.light = light;
+	}
+
+	public Vector3f getFog() {
+		return fog;
+	}
+
+	public void setFog(Vector3f fog) {
+		this.fog = fog;
+	}
+
+	public Vector3f getSkyLight() {
+		return skyLight;
+	}
+
+	public void setSkyLight(Vector3f skyLight) {
+		this.skyLight = skyLight;
+	}
+
+	public Model getSkybox() {
+		return skybox;
+	}
+
+	public void setSkybox(Model skybox) {
+		this.skybox = skybox;
+	}
+
+	
 }
