@@ -69,7 +69,6 @@ public class TestGame implements ILogic {
 	public void init() throws Exception {
 
 		renderer.init();
-		
 
 		Area domain = new Area(new Vector3f(1.1f, 2.2f, 3.3f), new Vector3f(5.0f, 4.0f, 7.0f));
 		
@@ -158,10 +157,18 @@ public class TestGame implements ILogic {
 		
 	}
 	
-	//int m = 1;
-
+	float m = 0.01f;
+	Vector3f fog = new Vector3f(0,0,0);
 	@Override
 	public void update(float interval, MouseInput mouseInput) {
+		
+		if (fog.x >= 1.0f || fog.x <= 1.0f) {
+			m = -m;
+		}
+		fog.x = fog.x + m;
+		fog.y = fog.x + m;
+		fog.z = fog.x + m;
+		System.out.println(fog);
 		
 		cam.movePos(camInc.x * Constants.CAM_STEP, camInc.y * Constants.CAM_STEP, camInc.z * Constants.CAM_STEP);
 		
@@ -173,6 +180,8 @@ public class TestGame implements ILogic {
 			cam.moveRotation(rotVec.x * Constants.MOUSE_SENSITIVITY, rotVec.y * Constants.MOUSE_SENSITIVITY, 0);
 		}
 	}
+	
+	
 
 	@Override
 	public void render() {
@@ -180,12 +189,13 @@ public class TestGame implements ILogic {
 			GL11.glViewport(0, 0, 5, 5);
 			window.setResize(true);
 		}
-		
-		renderer.loadLight(light);
-		renderer.renderList(allEntities, cam, window);
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+		renderer.getShader().setUniform("ambientLight", fog);
+		renderer.getShader().setUniform("skyColour", fog);
+		renderer.renderList(allEntities, cam, window, light);
 		
 
-		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+
 	}
 	
 

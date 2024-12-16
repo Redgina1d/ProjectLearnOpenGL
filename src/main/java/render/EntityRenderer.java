@@ -28,7 +28,6 @@ public class EntityRenderer {
 		shader.createVertShader(Utils.loadResource("/shaders/entity.vsh"));
 		shader.createFragShader(Utils.loadResource("/shaders/entity.fsh"));
 		shader.link();
-		
 		shader.createUniform("textureSampler");
 		shader.createUniform("transformationMatrix");
 		shader.createUniform("projMatrix");
@@ -62,31 +61,16 @@ public class EntityRenderer {
 	}
 	
 	Vector3f f = new Vector3f(0.34f, 0.3f, 0.5f);
-
-	public void initRender(Entity ent, Camera cam, WindowManager window, Light light) {
-		shader.setUniform("ambientLight", f);
-		loadTex();
-		loadShineVars(ent.getModel().getTexture().getShineDamper(), 0);
-		loadLight(light);
-		shader.setUniform("transformationMatrix", Transformation.createTransformMatrix(ent));
-		shader.setUniform("projMatrix", window.updateProjMatrix());
-		shader.setUniform("viewMatrix", Transformation.getViewMatrix(cam));
-		
-		shader.setUniform("lightAffected", ent.getModel().getMaterial().isLightAffected());
-		shader.setUniform("skyColour", f);
-		
-		Rendertype.renderOperations3D(ent, 0);
-	}
 	
 	public void render(Entity ent, Camera cam, WindowManager window) {
 		shader.setUniform("textureSampler", 0);
 		shader.setUniform("transformationMatrix", Transformation.createTransformMatrix(ent));
 		shader.setUniform("projMatrix", window.updateProjMatrix());
 		shader.setUniform("viewMatrix", Transformation.getViewMatrix(cam));
-		shader.setUniform("ambientLight", f);
+		//shader.setUniform("ambientLight", f);
 		shader.setUniform("lightAffected", ent.getModel().getMaterial().isLightAffected());
 		shader.setUniform("shineDamper", ent.getModel().getTexture().getShineDamper());
-		shader.setUniform("skyColour", f);
+		//shader.setUniform("skyColour", f);
 		
 		//Rendertype.renderOperations3D(ent, 0);
 		
@@ -123,19 +107,17 @@ public class EntityRenderer {
 	}
 	
 
-	public void renderList(ArrayList<Entity> entList, Camera cam, WindowManager window) {
+	public void renderList(ArrayList<Entity> entList, Camera cam, WindowManager window, Light light) {
 		shader.bind();
-		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+		loadLight(light);
 		for (Entity entity : entList) {
 			render(entity, cam, window);
 		}
 		shader.unbind();
 	}
 	
-	public void initRenderList(ArrayList<Entity> entList, Camera cam, WindowManager window, Light light) {
-		for (Entity entity : entList) {
-			initRender(entity, cam, window, light);
-		}
+	public ShaderManager getShader() {
+		return shader;
 	}
 	
 }
