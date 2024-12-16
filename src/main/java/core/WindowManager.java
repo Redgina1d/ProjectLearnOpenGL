@@ -119,7 +119,7 @@ public class WindowManager {
 		
 		GL.createCapabilities();
 		
-		GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		GL11.glClearColor(0.4f, 0.2f, 0.3f, 0.0f);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glDepthFunc(GL11.GL_LESS);
 		GL11.glEnable(GL11.GL_STENCIL_TEST);

@@ -53,19 +53,6 @@ void main() {
 		}
 	} else {
 		fragColour = texColor;
-		fragColour = mix(vec4(skyColour, 1.0), fragColour, visibility * 3);
+		fragColour = mix(vec4(skyColour, 1.0), fragColour, visibility);
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,5 +1,7 @@
 package test;
 
+import java.io.File;
+
 import core.EngineManager;
 import core.WindowManager;
 import core.utils.Constants;
@@ -11,9 +13,7 @@ public class Launcher {
 	private static TestGame game;
 	private static EngineManager engine;
 	
-	
 	public static void main(String[] args) {
-		System.out.println();
 		window = new WindowManager(Constants.TITLE, 1600, 900, true);
 		game = new TestGame();
 		engine = new EngineManager();

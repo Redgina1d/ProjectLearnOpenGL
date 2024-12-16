@@ -69,7 +69,7 @@ public class TestGame implements ILogic {
 	public void init() throws Exception {
 
 		renderer.init();
-		renderer.initRender(ent, cam, window, light);
+		
 
 		Area domain = new Area(new Vector3f(1.1f, 2.2f, 3.3f), new Vector3f(5.0f, 4.0f, 7.0f));
 		
@@ -133,7 +133,7 @@ public class TestGame implements ILogic {
 		
 		allGUIs.add(gui);
 		
-		
+		//renderer.initRender(ent, cam, window, light);
 
 	}
 
@@ -181,7 +181,9 @@ public class TestGame implements ILogic {
 			window.setResize(true);
 		}
 		
+		renderer.loadLight(light);
 		renderer.renderList(allEntities, cam, window);
+		
 
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 	}
