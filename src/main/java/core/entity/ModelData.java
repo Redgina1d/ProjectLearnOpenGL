@@ -1,6 +1,6 @@
 package core.entity;
 
-
+import core.Vertex;
 
 public class ModelData {
 
@@ -12,13 +12,11 @@ public class ModelData {
 	private float furthestPoint;
 
 
-	public ModelData(float[] vertices, float[] textureCoords, float[] normals, int[] indices,
-			float furthestPoint) {
+	public ModelData(float[] vertices, float[] textureCoords, float[] normals, int[] indices) {
 		this.vertices = vertices;
 		this.textureCoords = textureCoords;
 		this.normals = normals;
 		this.indices = indices;
-		this.furthestPoint = furthestPoint;
 	}
 
 

@@ -1,26 +1,13 @@
 package render;
 
-import java.lang.management.GarbageCollectorMXBean;
-import java.nio.FloatBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
-import org.lwjgl.opengl.GL31;
 import org.lwjgl.system.MemoryStack;
-
-import core.Camera;
-import core.WindowManager;
-import core.entity.Entity;
-import core.entity.Light;
-import core.entity.Material;
-import core.utils.Constants;
-import core.utils.Transformation;
 
 public class ShaderManager {
 	

@@ -2,6 +2,7 @@ package terrains;
 
 import core.ObjectLoader;
 import core.entity.Model;
+import core.entity.ModelData;
 import core.entity.Texture;
 
 // ThinMatrix tutorial
@@ -73,6 +74,7 @@ public class Terrain {
 				indices[pointer++] = bottomRight;
 			}
 		}
-		return loader.loadModel(vertices, textureCoords, normals, indices);
+		ModelData data = new ModelData(vertices, textureCoords, normals, indices);
+		return loader.loadOBJModel(data);
 	}
 }

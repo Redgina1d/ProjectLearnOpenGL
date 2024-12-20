@@ -124,7 +124,7 @@ public class ObjectLoader {
 				texCoordArr, normalArr);
 		int[] indicesArr = convertIndicesListToArray(indices);
 		
-		return new ModelData(verticesArr, texCoordArr, normalArr, indicesArr, furthest);
+		return new ModelData(verticesArr, texCoordArr, normalArr, indicesArr);
 	}
 
 

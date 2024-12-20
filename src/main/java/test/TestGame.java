@@ -25,12 +25,15 @@ import core.utils.Constants;
 import core.utils.MouseInput;
 import render.EntityRenderer;
 import render.GUI2DRenderer;
+import render.MagicRenderer;
 import render.ShaderManager;
 
 public class TestGame implements ILogic {
 	
 	private final EntityRenderer renderer;
 	//private final GUI2DRenderer guiRenderer;
+	private final MagicRenderer mRend;
+	
 	private final ObjectLoader loader;
 	private final WindowManager window;
 	
@@ -41,6 +44,8 @@ public class TestGame implements ILogic {
 	private ArrayList<Light> lights;
 	private Camera cam;
 	private Light light;
+	
+	private ArrayList<Entity> damnList;
 
 
 	Vector3f camInc;
@@ -51,6 +56,7 @@ public class TestGame implements ILogic {
 	
 	TestGame() {
 		renderer = new EntityRenderer();
+		mRend = new MagicRenderer();
 		//guiRenderer = new GUI2DRenderer();
 		window = Launcher.getWindow();
 		loader = new ObjectLoader();
@@ -62,6 +68,8 @@ public class TestGame implements ILogic {
 		lights = new ArrayList<Light>();
 		lights.add(light);
 		
+		damnList = new ArrayList<Entity>();
+		
 		areas = new ArrayList<Area>(); 
 	}
 
@@ -69,6 +77,7 @@ public class TestGame implements ILogic {
 	public void init() throws Exception {
 
 		renderer.init();
+		mRend.init();
 
 		Area domain = new Area(new Vector3f(1.1f, 2.2f, 3.3f), new Vector3f(5.0f, 4.0f, 7.0f));
 		
@@ -78,7 +87,7 @@ public class TestGame implements ILogic {
 		Model skyboxModel = loader.loadOBJModel("skybox", Constants.DIR + "/src/main/resources/textures/sky.png");
 		Model pointModel = loader.loadOBJModel("cubepoint", Constants.DIR + "/src/main/resources/textures/red.png");
 		Model point2Model = loader.loadOBJModel("cubepoint", Constants.DIR + "/src/main/resources/textures/white.png");
-		Model bricks = loader.loadOBJModel("Cube", Constants.DIR + "/src/main/resources/textures/brick_wall.png");
+		Model bricks = loader.loadOBJModel("nontrcube", Constants.DIR + "/src/main/resources/textures/brick_wall.png");
 		
 		Model guiModel = loader.loadOBJModel("gui", Constants.DIR + "/src/main/resources/textures/brick_wall.png");
 		
@@ -108,7 +117,7 @@ public class TestGame implements ILogic {
 		Entity p6 = new Entity(point2Model, domain.getPointByNumber(6), new Vector3f(0, 0, 0), 0.2f);
 		Entity p7 = new Entity(point2Model, domain.getPointByNumber(7), new Vector3f(0, 0, 0), 0.2f);
 		Entity p8 = new Entity(pointModel, domain.p8, new Vector3f(0, 0, 0), 0.4f);
-		ent = new Entity(cubeModel, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), 0.1f);
+		ent = new Entity(cubeModel, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), 1);
 		Entity skyEntity = new Entity(skyboxModel, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), 10);
 		Entity sun = new Entity(sunModel, new Vector3f(50.0f,40.5f,-60.0f), new Vector3f(0, 0, 0), 3);
 		Entity surface = new Entity(surfaceModel, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), 1);
@@ -129,6 +138,7 @@ public class TestGame implements ILogic {
 		allEntities.add(p6);
 		allEntities.add(p7);
 		allEntities.add(brick);
+		damnList.add(ent);
 		
 		allGUIs.add(gui);
 		
@@ -158,17 +168,9 @@ public class TestGame implements ILogic {
 	}
 	
 	float m = 0.01f;
-	Vector3f fog = new Vector3f(0,0,0);
+	Vector3f fog = new Vector3f(0.1f,0.1f,0.1f);
 	@Override
 	public void update(float interval, MouseInput mouseInput) {
-		
-		if (fog.x >= 1.0f || fog.x <= 1.0f) {
-			m = -m;
-		}
-		fog.x = fog.x + m;
-		fog.y = fog.x + m;
-		fog.z = fog.x + m;
-		System.out.println(fog);
 		
 		cam.movePos(camInc.x * Constants.CAM_STEP, camInc.y * Constants.CAM_STEP, camInc.z * Constants.CAM_STEP);
 		
@@ -190,9 +192,10 @@ public class TestGame implements ILogic {
 			window.setResize(true);
 		}
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-		renderer.getShader().setUniform("ambientLight", fog);
-		renderer.getShader().setUniform("skyColour", fog);
+		
 		renderer.renderList(allEntities, cam, window, light);
+		mRend.renderList(damnList, cam, window);
+		
 		
 
 
