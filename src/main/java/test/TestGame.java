@@ -31,7 +31,7 @@ import render.ShaderManager;
 public class TestGame implements ILogic {
 	
 	private final EntityRenderer renderer;
-	//private final GUI2DRenderer guiRenderer;
+	private final GUI2DRenderer gRend;
 	private final MagicRenderer mRend;
 	
 	private final ObjectLoader loader;
@@ -57,6 +57,7 @@ public class TestGame implements ILogic {
 	TestGame() {
 		renderer = new EntityRenderer();
 		mRend = new MagicRenderer();
+		gRend = new GUI2DRenderer();
 		//guiRenderer = new GUI2DRenderer();
 		window = Launcher.getWindow();
 		loader = new ObjectLoader();
@@ -78,6 +79,7 @@ public class TestGame implements ILogic {
 
 		renderer.init();
 		mRend.init();
+		gRend.init();
 
 		Area domain = new Area(new Vector3f(1.1f, 2.2f, 3.3f), new Vector3f(5.0f, 4.0f, 7.0f));
 		
@@ -87,7 +89,7 @@ public class TestGame implements ILogic {
 		Model skyboxModel = loader.loadOBJModel("skybox", Constants.DIR + "/src/main/resources/textures/sky.png");
 		Model pointModel = loader.loadOBJModel("cubepoint", Constants.DIR + "/src/main/resources/textures/red.png");
 		Model point2Model = loader.loadOBJModel("cubepoint", Constants.DIR + "/src/main/resources/textures/white.png");
-		Model bricks = loader.loadOBJModel("nontrcube", Constants.DIR + "/src/main/resources/textures/brick_wall.png");
+		Model bricks = loader.loadOBJModel("Cube", Constants.DIR + "/src/main/resources/textures/brick_wall.png");
 		
 		Model guiModel = loader.loadOBJModel("gui", Constants.DIR + "/src/main/resources/textures/brick_wall.png");
 		
@@ -98,9 +100,7 @@ public class TestGame implements ILogic {
 		cubeModel.getTexture().setShineDamper(1);
 		skyboxModel.getTexture().setShineDamper(-1);
 		bricks.getTexture().setShineDamper(-1);
-		guiModel.getTexture().setShineDamper(-1);
-		
-		guiModel.getMaterial().setLightAffected(false);
+
 		sunModel.getMaterial().setLightAffected(false);
 		pointModel.getMaterial().setLightAffected(false);
 		point2Model.getMaterial().setLightAffected(false);
@@ -117,30 +117,35 @@ public class TestGame implements ILogic {
 		Entity p6 = new Entity(point2Model, domain.getPointByNumber(6), new Vector3f(0, 0, 0), 0.2f);
 		Entity p7 = new Entity(point2Model, domain.getPointByNumber(7), new Vector3f(0, 0, 0), 0.2f);
 		Entity p8 = new Entity(pointModel, domain.p8, new Vector3f(0, 0, 0), 0.4f);
-		ent = new Entity(cubeModel, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), 1);
+		ent = new Entity(cubeModel, new Vector3f(0.1f, 1.5f, 0.1f), new Vector3f(0, 0, 0), 1);
 		Entity skyEntity = new Entity(skyboxModel, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), 10);
 		Entity sun = new Entity(sunModel, new Vector3f(50.0f,40.5f,-60.0f), new Vector3f(0, 0, 0), 3);
 		Entity surface = new Entity(surfaceModel, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), 1);
 		Entity brick = new Entity(bricks, new Vector3f(4.0f,10.5f,-3.0f), new Vector3f(0, 0, 0), 1);
-		gui = new Entity(guiModel, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), 1);
+		gui = new Entity(guiModel, new Vector3f(0, 0, 0), new Vector3f(90, 0, 0), 1);
 		
 		
 		allEntities.add(skyEntity);
-		allEntities.add(p1);
-		allEntities.add(p8);
+		
 		//allEntities.add(ent);
 		allEntities.add(surface);
 		allEntities.add(sun);
+		
+		allGUIs.add(gui);
+		/*
+		allEntities.add(p1);
+		allEntities.add(p8);
+		
 		allEntities.add(p2);
 		allEntities.add(p3);
 		allEntities.add(p4);
 		allEntities.add(p5);
 		allEntities.add(p6);
 		allEntities.add(p7);
+		*/
 		allEntities.add(brick);
 		damnList.add(ent);
 		
-		allGUIs.add(gui);
 		
 		//renderer.initRender(ent, cam, window, light);
 
@@ -168,14 +173,21 @@ public class TestGame implements ILogic {
 	}
 	
 	float m = 0.01f;
+	int dir = 1;
+	int dir2 = 1;
+	int dir3 = 1;
 	Vector3f fog = new Vector3f(0.1f,0.1f,0.1f);
 	@Override
 	public void update(float interval, MouseInput mouseInput) {
 		
+		
+		//damnList.get(0).setPos(cam.getPos().x, cam.getPos().y, cam.getPos().z - 3.0f);
+		
 		cam.movePos(camInc.x * Constants.CAM_STEP, camInc.y * Constants.CAM_STEP, camInc.z * Constants.CAM_STEP);
 		
 		allEntities.get(0).setPos(cam.getPos().x, cam.getPos().y, cam.getPos().z);
-		allEntities.get(1).incRotation(0.01f, 0, 0);
+		damnList.get(0).incRotation(0.1f, 0.1f, 0.1f);
+		//damnList.get(0).incScale(m * dir);
 		
 		if(mouseInput.isRightButtonPress()) {
 			Vector2f rotVec = mouseInput.getDisVec();
@@ -195,6 +207,9 @@ public class TestGame implements ILogic {
 		
 		renderer.renderList(allEntities, cam, window, light);
 		mRend.renderList(damnList, cam, window);
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		gRend.renderList(allGUIs, cam);
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		
 		
 
@@ -205,6 +220,8 @@ public class TestGame implements ILogic {
 	@Override
 	public void cleanup() {
 		renderer.cleanup();
+		mRend.cleanup();
+		gRend.cleanup();
 		loader.cleanup();
 		window.cleanup();
 	}

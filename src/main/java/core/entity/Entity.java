@@ -33,6 +33,12 @@ public class Entity {
 		this.rotation.y += y;
 		this.rotation.z += z;
 	}
+	public void incScale(float m) {
+		this.scale += m;
+	}
+	public void setScale(float m) {
+		this.scale = m;
+	}
 	
 	public void setRotation(float x, float y, float z) {
 		this.rotation.x = x;

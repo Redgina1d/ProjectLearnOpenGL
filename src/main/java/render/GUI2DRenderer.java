@@ -14,53 +14,36 @@ import core.utils.Transformation;
 import core.utils.Utils;
 
 public class GUI2DRenderer {
+	
+	private ShaderManager shader;
 
-	public void init(ShaderManager shader) throws Exception {
+	public void init() throws Exception {
+		shader = new ShaderManager();
 		shader.createVertShader(Utils.loadResource("/shaders/gui2d.vsh"));
 		shader.createFragShader(Utils.loadResource("/shaders/gui2d.fsh"));
 		shader.link();
 		shader.createUniform("textureSampler");
 		shader.createUniform("transformationMatrix");
-
 	}
 	
-	public void render(Entity ent, Camera cam, ShaderManager shader) {
+	public void render(Entity ent, Camera cam) {
 		shader.setUniform("textureSampler", 0);
 		shader.setUniform("transformationMatrix", Transformation.createTransformMatrix(ent));
 
-		GL30.glBindVertexArray(ent.getModel().getId());
-		
-		GL20.glEnableVertexAttribArray(0);
-		
-		GL13.glActiveTexture(GL13.GL_TEXTURE0);
-		
-		GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MIN_FILTER, GL20.GL_NEAREST);
-        GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAG_FILTER, GL20.GL_NEAREST);
-        
-        GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_S, GL20.GL_REPEAT);
-        GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_T, GL20.GL_REPEAT);
-        
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, ent.getModel().getTexture().getIds().get(0));
-		GL11.glDrawElements(GL11.GL_TRIANGLES, ent.getModel().getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
-		
-		GL20.glDisableVertexAttribArray(0);
-		
-		GL30.glBindVertexArray(0);
+		Rendertype.renderOperations2D(ent, 0);
 
 	}
 	
 
-	public void renderList(ArrayList<Entity> entList, Camera cam, ShaderManager shader) {
-		
-		//GL11.glDisable(GL11.GL_DEPTH_TEST);
+	public void renderList(ArrayList<Entity> entList, Camera cam) {
+		shader.bind();
 		for (Entity entity : entList) {
-			render(entity, cam, shader);
+			render(entity, cam);
 		}
-		//GL11.glEnable(GL11.GL_DEPTH_TEST);
-		
+		shader.unbind();
 	}
 
-	public void cleanup(ShaderManager shader) {
+	public void cleanup() {
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		shader.cleanup();
 	}

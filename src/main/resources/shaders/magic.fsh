@@ -20,6 +20,6 @@ void main() {
 		discard;
 	}
 
-	fragColour = texColor + vec4(cos(fragPos.x), 1, 1, 1);
+	fragColour = texColor + vec4(clamp(sin(fragPos.y), 0.2, 0.8), clamp(sin(fragPos.x), 0.2, 0.8), clamp(sin(fragPos.z), 0.2, 0.8), 1);
 	fragColour = mix(vec4(skyColour, 1.0), fragColour, visibility);
 }
