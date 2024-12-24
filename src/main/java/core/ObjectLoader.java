@@ -27,7 +27,6 @@ import org.lwjgl.system.MemoryUtil;
 
 import core.entity.Model;
 import core.entity.ModelData;
-import core.entity.Texture;
 import core.utils.Utils;
 
 public class ObjectLoader {
@@ -40,9 +39,10 @@ public class ObjectLoader {
 		Model mod = loadOBJModel(loadOBJModel(modelF));
 		try {
 			if (texF.toLowerCase().endsWith(".gif")) {
-				mod.setTexture(new Texture(loadGIF(texF)));
+				System.err.println("cant load gifs yet");
+				//mod.setTexture(new Texture(loadGIF(texF)));
 			} else {
-				mod.setTexture(new Texture(loadImg(texF)));
+				mod.setTexture(loadImg(texF));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

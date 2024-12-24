@@ -1,7 +1,5 @@
 package render;
 
-import java.util.HashMap;
-
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
@@ -35,7 +33,7 @@ public class Rendertype {
 	
 	
 	
-	public static void renderOperations3D(Entity ent, int texID) {
+	public static void renderOperations3D(Entity ent) {
 		GL30.glBindVertexArray(ent.getModel().getId());
 		
 		GL20.glEnableVertexAttribArray(0);
@@ -51,7 +49,7 @@ public class Rendertype {
         GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_T, GL20.GL_REPEAT);
         GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_R, GL20.GL_REPEAT);
         
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, ent.getModel().getTexture().getIds().get(texID));
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, ent.getModel().getTexture());
 		GL11.glDrawElements(GL11.GL_TRIANGLES, ent.getModel().getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
 		
 		GL20.glDisableVertexAttribArray(0);
@@ -73,11 +71,13 @@ public class Rendertype {
         
         GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_S, GL20.GL_REPEAT);
         GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_T, GL20.GL_REPEAT);
+        GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_R, GL20.GL_REPEAT);
         
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, texID);
 		GL11.glDrawElements(GL11.GL_TRIANGLES, ent.getModel().getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
 		
 		GL20.glDisableVertexAttribArray(0);
+
 		
 		GL30.glBindVertexArray(0);
 	}

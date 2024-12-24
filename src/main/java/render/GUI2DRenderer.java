@@ -3,13 +3,8 @@ package render;
 import java.util.ArrayList;
 
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
-
 import core.Camera;
 import core.entity.Entity;
-import core.entity.Texture;
 import core.utils.Transformation;
 import core.utils.Utils;
 
@@ -30,7 +25,7 @@ public class GUI2DRenderer {
 		shader.setUniform("textureSampler", 0);
 		shader.setUniform("transformationMatrix", Transformation.createTransformMatrix(ent));
 
-		Rendertype.renderOperations2D(ent, 0);
+		Rendertype.renderOperations3D(ent);
 
 	}
 	

@@ -4,20 +4,12 @@ import java.util.ArrayList;
 
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
-
-import core.Area;
 import core.Camera;
 import core.WindowManager;
 import core.entity.Entity;
 import core.entity.Light;
-import core.entity.Texture;
-import core.utils.Constants;
 import core.utils.Transformation;
 import core.utils.Utils;
-import test.Launcher;
 
 public class EntityRenderer {
 	
@@ -56,11 +48,11 @@ public class EntityRenderer {
 		shader.setUniform("viewMatrix", Transformation.getViewMatrix(cam));
 		shader.setUniform("ambientLight", fog);
 		shader.setUniform("skyColour", fog);
-		shader.setUniform("lightAffected", ent.getModel().getMaterial().isLightAffected());
-		shader.setUniform("shineDamper", ent.getModel().getTexture().getShineDamper());
+		shader.setUniform("lightAffected", true);
+		shader.setUniform("shineDamper", -1.0f);
 		//shader.setUniform("skyColour", f);
 		
-		Rendertype.renderOperations3D(ent, 0);
+		Rendertype.renderOperations3D(ent);
 	
 	}
 	

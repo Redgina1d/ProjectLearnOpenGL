@@ -3,7 +3,6 @@ package terrains;
 import core.ObjectLoader;
 import core.entity.Model;
 import core.entity.ModelData;
-import core.entity.Texture;
 
 // ThinMatrix tutorial
 public class Terrain {
@@ -14,9 +13,9 @@ public class Terrain {
 	private float x;
 	private float z;
 	private Model model;
-	private Texture texture;
+	private int texture;
 	
-	public Terrain(int gridX, int gridZ, ObjectLoader loader, Texture texture){
+	public Terrain(int gridX, int gridZ, ObjectLoader loader, int texture){
 		this.texture = texture;
 		this.x = gridX * SIZE;
 		this.z = gridZ * SIZE;
@@ -35,7 +34,7 @@ public class Terrain {
 		return model;
 	}
 
-	public Texture getTexture() {
+	public int getTexture() {
 		return texture;
 	}
 

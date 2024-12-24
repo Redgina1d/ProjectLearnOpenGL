@@ -10,6 +10,6 @@ uniform mat4 transformationMatrix;
 
 void main() {
 	gl_Position = transformationMatrix * vec4(position, 1.0);
-	fragPos = gl_Position.xyz;
+	fragPos = vec3(gl_Position.xy, 1);
 	fragTextureCoord = textureCoord;
 }

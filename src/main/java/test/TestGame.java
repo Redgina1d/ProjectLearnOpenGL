@@ -2,10 +2,6 @@ package test;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
@@ -13,20 +9,17 @@ import org.lwjgl.opengl.GL11;
 
 import core.Area;
 import core.Camera;
-import core.EngineManager;
 import core.ILogic;
 import core.ObjectLoader;
 import core.WindowManager;
 import core.entity.Entity;
 import core.entity.Light;
 import core.entity.Model;
-import core.entity.Texture;
 import core.utils.Constants;
 import core.utils.MouseInput;
 import render.EntityRenderer;
 import render.GUI2DRenderer;
 import render.MagicRenderer;
-import render.ShaderManager;
 
 public class TestGame implements ILogic {
 	
@@ -91,21 +84,8 @@ public class TestGame implements ILogic {
 		Model point2Model = loader.loadOBJModel("cubepoint", Constants.DIR + "/src/main/resources/textures/white.png");
 		Model bricks = loader.loadOBJModel("Cube", Constants.DIR + "/src/main/resources/textures/brick_wall.png");
 		
-		Model guiModel = loader.loadOBJModel("gui", Constants.DIR + "/src/main/resources/textures/brick_wall.png");
-		
-		pointModel.getTexture().setShineDamper(-1);
-		point2Model.getTexture().setShineDamper(-1);
-		sunModel.getTexture().setShineDamper(-1);
-		surfaceModel.getTexture().setShineDamper(-1);
-		cubeModel.getTexture().setShineDamper(1);
-		skyboxModel.getTexture().setShineDamper(-1);
-		bricks.getTexture().setShineDamper(-1);
+		Model guiModel = loader.loadOBJModel("gui", Constants.DIR + "/src/main/resources/textures/aim2.png");
 
-		sunModel.getMaterial().setLightAffected(false);
-		pointModel.getMaterial().setLightAffected(false);
-		point2Model.getMaterial().setLightAffected(false);
-		cubeModel.getMaterial().setLightAffected(true);
-		skyboxModel.getMaterial().setLightAffected(false);
 		
 		areas.add(domain);
 		
@@ -122,7 +102,7 @@ public class TestGame implements ILogic {
 		Entity sun = new Entity(sunModel, new Vector3f(50.0f,40.5f,-60.0f), new Vector3f(0, 0, 0), 3);
 		Entity surface = new Entity(surfaceModel, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), 1);
 		Entity brick = new Entity(bricks, new Vector3f(4.0f,10.5f,-3.0f), new Vector3f(0, 0, 0), 1);
-		gui = new Entity(guiModel, new Vector3f(0, 0, 0), new Vector3f(90, 0, 0), 1);
+		gui = new Entity(guiModel, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), 0.1f);
 		
 		
 		allEntities.add(skyEntity);
