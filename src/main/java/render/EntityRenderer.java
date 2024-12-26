@@ -52,7 +52,7 @@ public class EntityRenderer {
 		shader.setUniform("shineDamper", -1.0f);
 		//shader.setUniform("skyColour", f);
 		
-		Rendertype.renderOperations3D(ent);
+		Rendertype.renderOperations(ent);
 	
 	}
 	

@@ -38,7 +38,7 @@ public class MagicRenderer {
 
 		shader.setUniform("skyColour", fog);
 
-		Rendertype.renderOperations3D(ent);
+		Rendertype.renderOperations(ent);
 	
 	}
 	

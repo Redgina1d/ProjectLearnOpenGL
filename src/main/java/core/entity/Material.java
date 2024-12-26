@@ -8,7 +8,6 @@ public class Material {
 	private int metallicMap;
 	private int roughnessMap;
 	
-	
 	public Material(int albedoMap, int heightMap, int normalMap, int metallicMap, int roughnessMap) {
 		this.albedoMap = albedoMap;
 		this.normalMap = normalMap;

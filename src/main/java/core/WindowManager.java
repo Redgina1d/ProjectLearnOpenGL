@@ -26,6 +26,8 @@ import core.utils.Constants;
 
 public class WindowManager {
 
+	//0.5625
+	//1.7777778
 	
 	private final String title;
 	
@@ -58,6 +60,7 @@ public class WindowManager {
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // the window will NOT be resizable
 		glfwWindowHint(GLFW.GLFW_MAXIMIZED, GLFW_TRUE);
+		glfwWindowHint(GLFW.GLFW_DECORATED, GLFW_FALSE);
 		//glfwWindowHint(GLFW.GLFW_DECORATED, GLFW_FALSE);
 		glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);  // OpenGL 3
 		glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 2);  // OpenGL 3.2
@@ -144,9 +147,10 @@ public class WindowManager {
 		GL11.glClearColor(r, g, b, a);
 	}
 	
-	public boolean isKeyPressed(int key) {
+	public boolean isKeyHit(int key) {
 		return (GLFW.glfwGetKey(window, key) == GLFW.GLFW_PRESS);
 	}
+	
 	
 	public boolean windowShouldClose() {
 		return GLFW.glfwWindowShouldClose(window);

@@ -1,13 +1,11 @@
 package core.utils;
 
-import org.joml.Matrix3f;
 import org.joml.Matrix4f;
-import org.joml.Vector2f;
 import org.joml.Vector3f;
-
 
 import core.Camera;
 import core.entity.Entity;
+import core.entity.GUI2D;
 
 public class Transformation {
 	/*
@@ -63,16 +61,15 @@ public class Transformation {
 			rotateX((float) Math.toRadians(entity.getRotation().x)).
 			rotateY((float) Math.toRadians(entity.getRotation().y)).
 			rotateZ((float) Math.toRadians(entity.getRotation().z)).
-			scale(entity.getScale());
+			scale(entity.getScale().x, entity.getScale().y, entity.getScale().z);
 		return mtrx;
 	}
-	public static Matrix4f createGUITransformMatrix(Entity entity) {
+	
+	public static Matrix4f createSSTransformMatrix(GUI2D entity) {
 		Matrix4f mtrx = new Matrix4f();
 		mtrx.identity().translate(entity.getPos()).
-			rotateX((float) Math.toRadians(entity.getRotation().x)).
-			rotateY((float) Math.toRadians(entity.getRotation().y)).
-			rotateZ((float) Math.toRadians(entity.getRotation().z)).
-			scale(entity.getScale());
+			rotateZ((float) Math.toRadians(entity.getRotation())).
+			scaleXY(entity.getScale().x * 0.5625f, entity.getScale().y);
 		return mtrx;
 	}
 	

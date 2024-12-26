@@ -12,6 +12,8 @@ public class Constants {
 	public static final float Z_NEAR = 0.01f;
 	public static final float Z_FAR = 1000f;
 	
+	//public static final float ASPECT_RATIO = 
+	
 	public static final String TITLE = "Window to the.";
 	
 	public static final String DIR = Paths.get("").toAbsolutePath().toString();

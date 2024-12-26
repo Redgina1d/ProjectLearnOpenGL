@@ -5,12 +5,13 @@ import java.util.ArrayList;
 import org.lwjgl.opengl.GL11;
 import core.Camera;
 import core.entity.Entity;
+import core.entity.GUI2D;
 import core.utils.Transformation;
 import core.utils.Utils;
 
-public class GUI2DRenderer {
+public class SSRenderer {
 	
-	private ShaderManager shader;
+	public ShaderManager shader;
 
 	public void init() throws Exception {
 		shader = new ShaderManager();
@@ -21,18 +22,18 @@ public class GUI2DRenderer {
 		shader.createUniform("transformationMatrix");
 	}
 	
-	public void render(Entity ent, Camera cam) {
+	public void render(GUI2D ent, Camera cam) {
 		shader.setUniform("textureSampler", 0);
-		shader.setUniform("transformationMatrix", Transformation.createTransformMatrix(ent));
+		shader.setUniform("transformationMatrix", Transformation.createSSTransformMatrix(ent));
 
-		Rendertype.renderOperations3D(ent);
+		Rendertype.renderOperations(ent);
 
 	}
 	
 
-	public void renderList(ArrayList<Entity> entList, Camera cam) {
+	public void renderList(ArrayList<GUI2D> entList, Camera cam) {
 		shader.bind();
-		for (Entity entity : entList) {
+		for (GUI2D entity : entList) {
 			render(entity, cam);
 		}
 		shader.unbind();

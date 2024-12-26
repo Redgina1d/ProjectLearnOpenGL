@@ -6,6 +6,7 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
 import core.entity.Entity;
+import core.entity.GUI2D;
 
 public class Rendertype {
 
@@ -14,6 +15,8 @@ public class Rendertype {
 	private String vSh;
 	private String gSh;
 	private String fSh;
+	
+	private ShaderManager shader;
 	
 	private String dim;
 	private int vaoAttr;
@@ -33,7 +36,7 @@ public class Rendertype {
 	
 	
 	
-	public static void renderOperations3D(Entity ent) {
+	public static void renderOperations(Entity ent) {
 		GL30.glBindVertexArray(ent.getModel().getId());
 		
 		GL20.glEnableVertexAttribArray(0);
@@ -59,10 +62,12 @@ public class Rendertype {
 		GL30.glBindVertexArray(0);
 	}
 	
-	public static void renderOperations2D(Entity ent, int texID) {
+	public static void renderOperations(GUI2D ent) {
 		GL30.glBindVertexArray(ent.getModel().getId());
 		
 		GL20.glEnableVertexAttribArray(0);
+		GL20.glEnableVertexAttribArray(1);
+		GL20.glEnableVertexAttribArray(2);
 		
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		
@@ -73,11 +78,12 @@ public class Rendertype {
         GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_T, GL20.GL_REPEAT);
         GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_R, GL20.GL_REPEAT);
         
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, texID);
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, ent.getModel().getTexture());
 		GL11.glDrawElements(GL11.GL_TRIANGLES, ent.getModel().getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
 		
 		GL20.glDisableVertexAttribArray(0);
-
+		GL20.glDisableVertexAttribArray(1);
+		GL20.glDisableVertexAttribArray(2);
 		
 		GL30.glBindVertexArray(0);
 	}

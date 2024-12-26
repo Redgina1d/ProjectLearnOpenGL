@@ -7,9 +7,15 @@ public class Entity {
 	private Model model;
 	private Vector3f pos;
 	private Vector3f rotation;
-	private float scale;
+	private Vector3f scale;
 	
 	public Entity(Model model, Vector3f pos, Vector3f rotation, float scale) {
+		this.model = model;
+		this.pos = pos;
+		this.rotation = rotation;
+		this.scale = new Vector3f(scale, scale, scale);
+	}
+	public Entity(Model model, Vector3f pos, Vector3f rotation, Vector3f scale) {
 		this.model = model;
 		this.pos = pos;
 		this.rotation = rotation;
@@ -33,10 +39,26 @@ public class Entity {
 		this.rotation.y += y;
 		this.rotation.z += z;
 	}
+	
 	public void incScale(float m) {
-		this.scale += m;
+		this.scale.x += m;
+		this.scale.y += m;
+		this.scale.z += m;
 	}
+	
 	public void setScale(float m) {
+		this.scale.x = m;
+		this.scale.y = m;
+		this.scale.z = m;
+	}
+	
+	public void incScale(Vector3f m) {
+		this.scale.x += m.x;
+		this.scale.y += m.y;
+		this.scale.z += m.z;
+	}
+	
+	public void setScale(Vector3f m) {
 		this.scale = m;
 	}
 	
@@ -59,7 +81,7 @@ public class Entity {
 		return rotation;
 	}
 
-	public float getScale() {
+	public Vector3f getScale() {
 		return scale;
 	}
 

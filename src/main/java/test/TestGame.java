@@ -13,26 +13,27 @@ import core.ILogic;
 import core.ObjectLoader;
 import core.WindowManager;
 import core.entity.Entity;
+import core.entity.GUI2D;
 import core.entity.Light;
 import core.entity.Model;
 import core.utils.Constants;
 import core.utils.MouseInput;
 import render.EntityRenderer;
-import render.GUI2DRenderer;
+import render.SSRenderer;
 import render.MagicRenderer;
 
 public class TestGame implements ILogic {
 	
 	private final EntityRenderer renderer;
-	private final GUI2DRenderer gRend;
+	private final SSRenderer gRend;
 	private final MagicRenderer mRend;
 	
 	private final ObjectLoader loader;
 	private final WindowManager window;
 	
 	private ArrayList<Entity> allEntities;
-
-	private ArrayList<Entity> allGUIs;
+	private ArrayList<GUI2D> allGUIs;
+	
 	private ArrayList<Area> areas;
 	private ArrayList<Light> lights;
 	private Camera cam;
@@ -44,13 +45,14 @@ public class TestGame implements ILogic {
 	Vector3f camInc;
 	
 	Entity ent;
-	Entity gui;
+	GUI2D crosshair;
+	GUI2D consoleBackground;
 	
 	
 	TestGame() {
 		renderer = new EntityRenderer();
 		mRend = new MagicRenderer();
-		gRend = new GUI2DRenderer();
+		gRend = new SSRenderer();
 		//guiRenderer = new GUI2DRenderer();
 		window = Launcher.getWindow();
 		loader = new ObjectLoader();
@@ -58,7 +60,7 @@ public class TestGame implements ILogic {
 		camInc = new Vector3f(0, 0, 0);
 		light = new Light(new Vector3f(50.0f,40.5f,-60.0f), new Vector3f(1.9f,1.9f,1.2f));
 		allEntities = new ArrayList<Entity>();
-		allGUIs = new ArrayList<Entity>();
+		allGUIs = new ArrayList<GUI2D>();
 		lights = new ArrayList<Light>();
 		lights.add(light);
 		
@@ -70,6 +72,8 @@ public class TestGame implements ILogic {
 	@Override
 	public void init() throws Exception {
 
+
+		
 		renderer.init();
 		mRend.init();
 		gRend.init();
@@ -84,7 +88,8 @@ public class TestGame implements ILogic {
 		Model point2Model = loader.loadOBJModel("cubepoint", Constants.DIR + "/src/main/resources/textures/white.png");
 		Model bricks = loader.loadOBJModel("Cube", Constants.DIR + "/src/main/resources/textures/brick_wall.png");
 		
-		Model guiModel = loader.loadOBJModel("gui", Constants.DIR + "/src/main/resources/textures/aim2.png");
+		Model guiModel = loader.loadOBJModel("sqr_1x1", Constants.DIR + "/src/main/resources/textures/aim2.png");
+		Model consoleModel = loader.loadOBJModel("sqr_1x1", Constants.DIR + "/src/main/resources/textures/console.png");
 
 		
 		areas.add(domain);
@@ -98,11 +103,14 @@ public class TestGame implements ILogic {
 		Entity p7 = new Entity(point2Model, domain.getPointByNumber(7), new Vector3f(0, 0, 0), 0.2f);
 		Entity p8 = new Entity(pointModel, domain.p8, new Vector3f(0, 0, 0), 0.4f);
 		ent = new Entity(cubeModel, new Vector3f(0.1f, 1.5f, 0.1f), new Vector3f(0, 0, 0), 1);
+		
 		Entity skyEntity = new Entity(skyboxModel, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), 10);
 		Entity sun = new Entity(sunModel, new Vector3f(50.0f,40.5f,-60.0f), new Vector3f(0, 0, 0), 3);
 		Entity surface = new Entity(surfaceModel, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), 1);
 		Entity brick = new Entity(bricks, new Vector3f(4.0f,10.5f,-3.0f), new Vector3f(0, 0, 0), 1);
-		gui = new Entity(guiModel, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), 0.1f);
+		
+		crosshair = new GUI2D(guiModel, new Vector3f(0, 0, 0), 0.0f, new Vector2f(0.1f, 0.1f));
+		consoleBackground = new GUI2D(consoleModel, new Vector3f(0, 0, 0), 0.0f, 1.0f);
 		
 		
 		allEntities.add(skyEntity);
@@ -111,8 +119,8 @@ public class TestGame implements ILogic {
 		allEntities.add(surface);
 		allEntities.add(sun);
 		
-		allGUIs.add(gui);
-		/*
+		allGUIs.add(crosshair);
+		
 		allEntities.add(p1);
 		allEntities.add(p8);
 		
@@ -122,7 +130,7 @@ public class TestGame implements ILogic {
 		allEntities.add(p5);
 		allEntities.add(p6);
 		allEntities.add(p7);
-		*/
+		
 		allEntities.add(brick);
 		damnList.add(ent);
 		
@@ -135,22 +143,37 @@ public class TestGame implements ILogic {
 	@Override
 	public void input() {
 		camInc.set(0, 0, 0);
-		if(window.isKeyPressed(GLFW.GLFW_KEY_W))
+		if(window.isKeyHit(GLFW.GLFW_KEY_W))
 			camInc.z = -1;
-		if(window.isKeyPressed(GLFW.GLFW_KEY_S))
+		if(window.isKeyHit(GLFW.GLFW_KEY_S))
 			camInc.z = 1;
 		
-		if(window.isKeyPressed(GLFW.GLFW_KEY_A))
+		if(window.isKeyHit(GLFW.GLFW_KEY_A))
 			camInc.x = -1;
-		if(window.isKeyPressed(GLFW.GLFW_KEY_D))
+		if(window.isKeyHit(GLFW.GLFW_KEY_D))
 			camInc.x = 1;
 		
-		if(window.isKeyPressed(GLFW.GLFW_KEY_SPACE))
+		if(window.isKeyHit(GLFW.GLFW_KEY_SPACE))
 			camInc.y = 1;
-		if(window.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT))
+		if(window.isKeyHit(GLFW.GLFW_KEY_LEFT_SHIFT))
 			camInc.y = -1;
 		
+		if(window.isKeyHit(GLFW.GLFW_KEY_SLASH))
+			if (keyCD == 0) {
+				if(consoleOpened) {
+					consoleOpened = false;
+					keyCD = 100;
+				} else {
+					consoleOpened = true;
+					keyCD = 100;
+				}
+			}
+			
+		
 	}
+
+	int keyCD;
+	boolean consoleOpened = false;
 	
 	float m = 0.01f;
 	int dir = 1;
@@ -160,7 +183,8 @@ public class TestGame implements ILogic {
 	@Override
 	public void update(float interval, MouseInput mouseInput) {
 		
-		
+		if (keyCD > 0)
+			keyCD -= 1;
 		//damnList.get(0).setPos(cam.getPos().x, cam.getPos().y, cam.getPos().z - 3.0f);
 		
 		cam.movePos(camInc.x * Constants.CAM_STEP, camInc.y * Constants.CAM_STEP, camInc.z * Constants.CAM_STEP);
@@ -188,7 +212,12 @@ public class TestGame implements ILogic {
 		renderer.renderList(allEntities, cam, window, light);
 		mRend.renderList(damnList, cam, window);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
-		gRend.renderList(allGUIs, cam);
+		gRend.shader.bind();
+		gRend.render(crosshair, cam);
+		if (consoleOpened) {
+			gRend.render(consoleBackground, cam);
+		}
+		gRend.shader.unbind();
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		
 		
