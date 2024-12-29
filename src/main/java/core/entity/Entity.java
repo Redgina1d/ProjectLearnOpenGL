@@ -1,5 +1,6 @@
 package core.entity;
 
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 public class Entity {
@@ -20,6 +21,18 @@ public class Entity {
 		this.pos = pos;
 		this.rotation = rotation;
 		this.scale = scale;
+	}
+	public Entity(Model model, Vector3f pos, float rotation, Vector2f scale) {
+		this.model = model;
+		this.pos = pos;
+		this.rotation = new Vector3f(0,0,rotation);
+		this.scale = new Vector3f(scale.x, scale.y, 1);
+	}
+	public Entity(Model model, Vector3f pos, float rotation, float scale) {
+		this.model = model;
+		this.pos = pos;
+		this.rotation = new Vector3f(0,0,rotation);
+		this.scale = new Vector3f(scale, scale, 1);
 	}
 	
 	public void incPos(float x, float y, float z) {
@@ -76,7 +89,6 @@ public class Entity {
 		return pos;
 	}
 	
-
 	public Vector3f getRotation() {
 		return rotation;
 	}

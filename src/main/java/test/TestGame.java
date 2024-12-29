@@ -13,7 +13,6 @@ import core.ILogic;
 import core.ObjectLoader;
 import core.WindowManager;
 import core.entity.Entity;
-import core.entity.GUI2D;
 import core.entity.Light;
 import core.entity.Model;
 import core.utils.Constants;
@@ -32,7 +31,7 @@ public class TestGame implements ILogic {
 	private final WindowManager window;
 	
 	private ArrayList<Entity> allEntities;
-	private ArrayList<GUI2D> allGUIs;
+	private ArrayList<Entity> allGUIs;
 	
 	private ArrayList<Area> areas;
 	private ArrayList<Light> lights;
@@ -45,8 +44,8 @@ public class TestGame implements ILogic {
 	Vector3f camInc;
 	
 	Entity ent;
-	GUI2D crosshair;
-	GUI2D consoleBackground;
+	Entity crosshair;
+	Entity consoleBackground;
 	
 	
 	TestGame() {
@@ -60,7 +59,7 @@ public class TestGame implements ILogic {
 		camInc = new Vector3f(0, 0, 0);
 		light = new Light(new Vector3f(50.0f,40.5f,-60.0f), new Vector3f(1.9f,1.9f,1.2f));
 		allEntities = new ArrayList<Entity>();
-		allGUIs = new ArrayList<GUI2D>();
+		allGUIs = new ArrayList<Entity>();
 		lights = new ArrayList<Light>();
 		lights.add(light);
 		
@@ -74,9 +73,7 @@ public class TestGame implements ILogic {
 
 
 		
-		renderer.init();
-		mRend.init();
-		gRend.init();
+		
 
 		Area domain = new Area(new Vector3f(1.1f, 2.2f, 3.3f), new Vector3f(5.0f, 4.0f, 7.0f));
 		
@@ -109,8 +106,8 @@ public class TestGame implements ILogic {
 		Entity surface = new Entity(surfaceModel, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), 1);
 		Entity brick = new Entity(bricks, new Vector3f(4.0f,10.5f,-3.0f), new Vector3f(0, 0, 0), 1);
 		
-		crosshair = new GUI2D(guiModel, new Vector3f(0, 0, 0), 0.0f, new Vector2f(0.1f, 0.1f));
-		consoleBackground = new GUI2D(consoleModel, new Vector3f(0, 0, 0), 0.0f, 1.0f);
+		crosshair = new Entity(guiModel, new Vector3f(0, 0, 0), 0.0f, new Vector2f(0.1f, 0.1f));
+		consoleBackground = new Entity(consoleModel, new Vector3f(0, 0, 0), 0.0f, 1.0f);
 		
 		
 		allEntities.add(skyEntity);
@@ -136,6 +133,10 @@ public class TestGame implements ILogic {
 		
 		
 		//renderer.initRender(ent, cam, window, light);
+		
+		renderer.init();
+		mRend.init();
+		gRend.init();
 
 	}
 
@@ -189,6 +190,8 @@ public class TestGame implements ILogic {
 		
 		cam.movePos(camInc.x * Constants.CAM_STEP, camInc.y * Constants.CAM_STEP, camInc.z * Constants.CAM_STEP);
 		
+		crosshair.incRotation(0, 0, 1.0f);
+		
 		allEntities.get(0).setPos(cam.getPos().x, cam.getPos().y, cam.getPos().z);
 		damnList.get(0).incRotation(0.1f, 0.1f, 0.1f);
 		//damnList.get(0).incScale(m * dir);
@@ -209,8 +212,11 @@ public class TestGame implements ILogic {
 		}
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		
-		renderer.renderList(allEntities, cam, window, light);
-		mRend.renderList(damnList, cam, window);
+		renderer.renderList(allEntities, cam);
+		renderer.shader.bind();
+		renderer.loadLight(light);
+		renderer.shader.unbind();
+		mRend.renderList(damnList, cam);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		gRend.shader.bind();
 		gRend.render(crosshair, cam);

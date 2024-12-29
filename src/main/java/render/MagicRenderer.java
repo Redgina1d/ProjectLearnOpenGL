@@ -12,7 +12,7 @@ import core.entity.Light;
 import core.utils.Transformation;
 import core.utils.Utils;
 
-public class MagicRenderer {
+public class MagicRenderer implements IRenderer {
 
 	private ShaderManager shader;
 	
@@ -24,22 +24,21 @@ public class MagicRenderer {
 		shader.createUniform("transformationMatrix");
 		shader.createUniform("projMatrix");
 		shader.createUniform("viewMatrix");
-		shader.createUniform("skyColour");
-		
+		shader.createUniform("ambientLight");
+		shader.bind();
+		shader.setUniform("projMatrix", WindowManager.PROJ_MAT);
+		shader.setUniform("ambientLight", fog);
+		shader.unbind();
 	}
 	
 
 	Vector3f fog = new Vector3f(0.34f, 0.3f, 0.5f);
 	
-	public void render(Entity ent, Camera cam, WindowManager window) {
+	public void render(Entity ent, Camera cam) {
 		shader.setUniform("transformationMatrix", Transformation.createTransformMatrix(ent));
-		shader.setUniform("projMatrix", window.updateProjMatrix());
 		shader.setUniform("viewMatrix", Transformation.getViewMatrix(cam));
-
-		shader.setUniform("skyColour", fog);
-
-		Rendertype.renderOperations(ent);
-	
+		
+		IRenderer.renderOperations(ent);
 	}
 	
 
@@ -50,10 +49,10 @@ public class MagicRenderer {
 	}
 	
 
-	public void renderList(ArrayList<Entity> entList, Camera cam, WindowManager window) {
+	public void renderList(ArrayList<Entity> entList, Camera cam) {
 		shader.bind();
 		for (Entity entity : entList) {
-			render(entity, cam, window);
+			render(entity, cam);
 		}
 		shader.unbind();
 	}

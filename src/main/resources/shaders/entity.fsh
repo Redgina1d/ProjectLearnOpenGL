@@ -16,7 +16,6 @@ uniform vec3 lightColour;
 uniform float shineDamper;
 uniform float reflectivity;
 uniform bool lightAffected;
-uniform vec3 skyColour;
 
 vec4 texColor;
 
@@ -46,13 +45,13 @@ void main() {
 	if(lightAffected) {
 		if(shineDamper == -1 || reflectivity == -1) {
 			fragColour = texColor * vec4(diffuse, 1.0) + (vec4(ambientLight, 1) / 2) + (texColor / 10);
-			fragColour = mix(vec4(skyColour, 1.0), fragColour, visibility);
+			fragColour = mix(vec4(ambientLight, 1.0), fragColour, visibility);
 		} else {
 			fragColour = vec4(diffuse, 1.0) * texColor + vec4(finSpec, 1.0) + ((vec4(ambientLight, 1) / 2) + (texColor / 10));
-			fragColour = mix(vec4(skyColour, 1.0), fragColour, visibility);
+			fragColour = mix(vec4(ambientLight, 1.0), fragColour, visibility);
 		}
 	} else {
 		fragColour = texColor;
-		fragColour = mix(vec4(skyColour, 1.0), fragColour, visibility);
+		fragColour = mix(vec4(ambientLight, 1.0), fragColour, visibility);
 	}
 }

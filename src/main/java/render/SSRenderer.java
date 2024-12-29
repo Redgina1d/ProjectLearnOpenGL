@@ -5,11 +5,10 @@ import java.util.ArrayList;
 import org.lwjgl.opengl.GL11;
 import core.Camera;
 import core.entity.Entity;
-import core.entity.GUI2D;
 import core.utils.Transformation;
 import core.utils.Utils;
 
-public class SSRenderer {
+public class SSRenderer implements IRenderer {
 	
 	public ShaderManager shader;
 
@@ -22,18 +21,16 @@ public class SSRenderer {
 		shader.createUniform("transformationMatrix");
 	}
 	
-	public void render(GUI2D ent, Camera cam) {
+	public void render(Entity ent, Camera cam) {
 		shader.setUniform("textureSampler", 0);
-		shader.setUniform("transformationMatrix", Transformation.createSSTransformMatrix(ent));
+		shader.setUniform("transformationMatrix", Transformation.createTransformMatrix(ent));
 
-		Rendertype.renderOperations(ent);
-
+		IRenderer.renderOperations(ent);
 	}
-	
 
-	public void renderList(ArrayList<GUI2D> entList, Camera cam) {
+	public void renderList(ArrayList<Entity> entList, Camera cam) {
 		shader.bind();
-		for (GUI2D entity : entList) {
+		for (Entity entity : entList) {
 			render(entity, cam);
 		}
 		shader.unbind();

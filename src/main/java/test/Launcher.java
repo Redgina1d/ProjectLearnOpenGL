@@ -1,12 +1,8 @@
 package test;
 
-import java.io.File;
-
 import core.EngineManager;
 import core.WindowManager;
-import core.Text.IngameChar;
 import core.utils.Constants;
-import core.utils.Utils;
 
 public class Launcher {
 	

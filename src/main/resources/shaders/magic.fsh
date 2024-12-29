@@ -9,7 +9,7 @@ in float visibility;
 out vec4 fragColour;
 
 uniform sampler2D textureSampler;
-uniform vec3 skyColour;
+uniform vec3 ambientLight;
 
 vec4 texColor;
 
@@ -21,5 +21,5 @@ void main() {
 	}
 
 	fragColour = texColor + vec4(clamp(sin(fragPos.y), 0.2, 0.8), clamp(sin(fragPos.x), 0.2, 0.8), clamp(sin(fragPos.z), 0.2, 0.8), 1);
-	fragColour = mix(vec4(skyColour, 1.0), fragColour, visibility);
+	fragColour = mix(vec4(ambientLight, 1.0), fragColour, visibility);
 }

@@ -16,7 +16,6 @@ public class Text {
 	private ObjectLoader loader = new ObjectLoader();
 	
 	public static enum IngameChar {
-		
 		_0('0'),
 		_1('1'),
 		_2('2'),
@@ -124,10 +123,6 @@ public class Text {
 
 	    public char getChar() {
 	        return symbol;
-	    }
-	    
-	    public String getName(char symbol) {
-	    	
 	    }
 
 	    private char symbol;

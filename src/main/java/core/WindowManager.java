@@ -36,14 +36,13 @@ public class WindowManager {
 	
 	private boolean resize, vSync;
 	
-	private final Matrix4f projMatrix;
+	public static final Matrix4f PROJ_MAT = new Matrix4f().setPerspective(Constants.FOV, 1.7777778f, Constants.Z_NEAR, Constants.Z_FAR);
 	
 	public WindowManager (String title, int width, int height, boolean vSync) {
 		this.title = title;
 		this.height = height;
 		this.width = width;
 		this.vSync = vSync;
-		projMatrix = new Matrix4f();
 	}
 	
 	public void init() {
@@ -165,14 +164,7 @@ public class WindowManager {
 	public int getHeight() {
 		return height;
 	}
-	public Matrix4f getProjMatrix() {
-		return projMatrix;
-	}
 	
-	public Matrix4f updateProjMatrix() {
-		float aspectRatio = (float) width / height;
-		return projMatrix.setPerspective(Constants.FOV, aspectRatio, Constants.Z_NEAR, Constants.Z_FAR);
-	}
 	
 	public Matrix4f updateProjMatrix(Matrix4f matrix, int width, int height) {
 		float aspectRatio = (float) width / height;
