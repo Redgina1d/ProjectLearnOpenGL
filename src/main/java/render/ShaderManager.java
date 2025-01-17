@@ -1,11 +1,13 @@
 package render;
 
+import java.nio.FloatBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.system.MemoryStack;
 
@@ -64,6 +66,15 @@ public class ShaderManager {
 	// float
 	public void setUniform(String unifname, float val) {
 		GL20.glUniform1f(uniforms.get(unifname), val);
+		
+	}
+	// vec3f arr
+	public void setUniform(String unifname, Vector3f[] vals) {
+		FloatBuffer floatBuffer = BufferUtils.createFloatBuffer(vals.length * 3);
+		for (int i = 0; i < vals.length; i++) {
+			floatBuffer.put(new float[] {vals[i].x, vals[i].y, vals[i].z}).flip();
+		}
+		GL20.glUniform3fv(uniforms.get(unifname), floatBuffer);
 		
 	}
 	

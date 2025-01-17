@@ -1,8 +1,8 @@
 package terrains;
 
-import core.ObjectLoader;
 import core.entity.Model;
 import core.entity.ModelData;
+import readers.ObjectLoader;
 
 // ThinMatrix tutorial
 public class Terrain {

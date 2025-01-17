@@ -67,7 +67,6 @@ public class EngineManager {
 				
 				if(frameCounter >= NANOSECOND) {
 					setFps(frames);
-					window.setTitle("FPS: " + fps);
 					frames = 0;
 					frameCounter = 0;
 				}
@@ -83,7 +82,7 @@ public class EngineManager {
 	}
 	
 	private void stop() {
-		if(isRunning)
+		if(!isRunning)
 			return;
 		isRunning = false;
 	}
@@ -103,10 +102,8 @@ public class EngineManager {
 	}
 	
 	private void cleanup() {
-
 		gameLogic.cleanup();
 		errorCallback.free();
-		//window.cleanup();
 		GLFW.glfwTerminate();
 	}
 	
@@ -117,20 +114,5 @@ public class EngineManager {
 	public static void setFps(int fps) {
 		EngineManager.fps = fps;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 }

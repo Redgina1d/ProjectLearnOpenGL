@@ -9,6 +9,7 @@ import core.Camera;
 import core.WindowManager;
 import core.entity.Entity;
 import core.entity.Light;
+import core.utils.Constants;
 import core.utils.Transformation;
 import core.utils.Utils;
 
@@ -27,12 +28,9 @@ public class MagicRenderer implements IRenderer {
 		shader.createUniform("ambientLight");
 		shader.bind();
 		shader.setUniform("projMatrix", WindowManager.PROJ_MAT);
-		shader.setUniform("ambientLight", fog);
+		shader.setUniform("ambientLight", Constants.FOG);
 		shader.unbind();
 	}
-	
-
-	Vector3f fog = new Vector3f(0.34f, 0.3f, 0.5f);
 	
 	public void render(Entity ent, Camera cam) {
 		shader.setUniform("transformationMatrix", Transformation.createTransformMatrix(ent));

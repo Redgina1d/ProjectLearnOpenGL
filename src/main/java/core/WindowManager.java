@@ -13,7 +13,6 @@ import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
 import static org.lwjgl.glfw.GLFW.glfwWindowHint;
 
-
 import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -38,12 +37,18 @@ public class WindowManager {
 	
 	public static final Matrix4f PROJ_MAT = new Matrix4f().setPerspective(Constants.FOV, 1.7777778f, Constants.Z_NEAR, Constants.Z_FAR);
 	
+	
 	public WindowManager (String title, int width, int height, boolean vSync) {
 		this.title = title;
 		this.height = height;
 		this.width = width;
 		this.vSync = vSync;
 	}
+	
+	
+	float i = 0;
+	boolean close = false;
+	
 	
 	public void init() {
 		// Setup an error callback. The default implementation
@@ -57,43 +62,44 @@ public class WindowManager {
 		// Configure GLFW
 		glfwDefaultWindowHints(); // optional, the current window hints are already the default
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
-		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // the window will NOT be resizable
-		glfwWindowHint(GLFW.GLFW_MAXIMIZED, GLFW_TRUE);
-		glfwWindowHint(GLFW.GLFW_DECORATED, GLFW_FALSE);
-		//glfwWindowHint(GLFW.GLFW_DECORATED, GLFW_FALSE);
-		glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);  // OpenGL 3
+		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will NOT be resizable
+		glfwWindowHint(GLFW.GLFW_MAXIMIZED, GLFW_FALSE);
+		glfwWindowHint(GLFW.GLFW_DECORATED, GLFW_TRUE);
+		glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 4);  // OpenGL 3
 		glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 2);  // OpenGL 3.2
 		glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
-		glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GL11.GL_TRUE);
+		glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 		
 		GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
-		width = vidMode.width();
-		height = vidMode.height();
+
 		
-		boolean maximized = true;
+		boolean maximized = false;
 		if (width == 0 || height == 0) {
 			width = vidMode.width();
 			height = vidMode.height();
 			glfwWindowHint(GLFW.GLFW_MAXIMIZED, GLFW_TRUE);
 		}
 		
+		
 		window = glfwCreateWindow(width, height, title, MemoryUtil.NULL, MemoryUtil.NULL);
 		if (window == MemoryUtil.NULL)
 			throw new RuntimeException("Failed to create the GLFW window");
 		
+		GLFW.glfwSetWindowOpacity(window, 0);
+		
+		GLFW.glfwSetWindowAspectRatio(window, width, height);
+		
+		
+		
 		GLFW.glfwSetFramebufferSizeCallback(window, (window, width, height) -> {
 			this.width = width;
 			this.height = height;
+			
 		});
 		
 		glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
 			if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE ) {
-				try {
-					glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
-					
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				close = true;
 				
 			} else if (key == GLFW.GLFW_KEY_MINUS && action == GLFW_RELEASE) {
 				try {
@@ -128,10 +134,29 @@ public class WindowManager {
 		GL11.glEnable(GL11.GL_SMOOTH);
 		GL11.glEnable(GL11.GL_BACK);
 		GL11.glEnable(GL11.GL_ALPHA);
+		
+		
 	}
 	
 	public void update() {
-
+		if (!close) {
+			if (i < 0.99f) {
+				i += 0.01f;
+				GLFW.glfwSetWindowOpacity(window, i);
+			} else {
+				GLFW.glfwSetWindowOpacity(window, 1);
+			}
+		} else {
+			if (i > 0.01f) {
+				i -= 0.01f;
+				GLFW.glfwSetWindowOpacity(window, i);
+			} else {
+				GLFW.glfwSetWindowOpacity(window, 0);
+				glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
+			}
+		}
+		
+		GL11.glViewport(0, 0, width, height);
 		GLFW.glfwSwapBuffers(window);
 		GLFW.glfwPollEvents();
 
@@ -146,8 +171,8 @@ public class WindowManager {
 		GL11.glClearColor(r, g, b, a);
 	}
 	
-	public boolean isKeyHit(int key) {
-		return (GLFW.glfwGetKey(window, key) == GLFW.GLFW_PRESS);
+	public boolean isKeyInteract(int key, int action) {
+		return (GLFW.glfwGetKey(window, key) == action);
 	}
 	
 	

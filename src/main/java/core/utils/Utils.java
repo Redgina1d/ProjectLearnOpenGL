@@ -15,8 +15,7 @@ import java.util.Scanner;
 
 import org.lwjgl.system.MemoryUtil;
 
-
-public class Utils {
+public abstract class Utils {
 	
 	public static FloatBuffer storeDataInFloatBuff(float[] data) {
 		FloatBuffer buffer = MemoryUtil.memAllocFloat(data.length);

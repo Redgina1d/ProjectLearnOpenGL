@@ -1,19 +1,92 @@
 package core;
 
-import org.joml.Vector3f;
-import org.joml.Vector4f;
+import java.util.ArrayList;
 
-import core.entity.GUI2D;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
+
+import core.entity.Entity;
 import core.entity.Model;
 import core.utils.Constants;
+import readers.ObjectLoader;
 
 public class Text {
 	
-	private int charsInCurrLine = 0;
+	private ArrayList<Entity> chars;
+	private float scale;
+	private byte maxCharsInX, maxCharsInY;
+	
+	private Vector2f xyStart, xyEnd;
+	private float zLoc;
 
 	public static final float CHAR_RATIO = 0.6f;
+	public static final float CHAR_W = 1.2f;
+	public static final float CHAR_H = 2;
 	
-	private ObjectLoader loader = new ObjectLoader();
+	private ObjectLoader loader;
+	
+	
+	public Text(ArrayList<Entity> chars, float scale, Vector2f xyStart, Vector2f xyEnd, float zLoc) throws Exception {
+		this.chars = chars;
+		this.scale = scale;
+		this.xyStart = xyStart;
+		this.xyEnd = xyEnd;
+		this.zLoc = zLoc;
+		loader = new ObjectLoader();
+		maxCharsInX = (byte) Math.floor((xyEnd.x - xyStart.x) / (CHAR_W * scale));
+		maxCharsInY = (byte) Math.floor((xyEnd.y - xyStart.y) / (CHAR_H * scale));
+		if (maxCharsInX < 1 || maxCharsInY < 1) {
+			throw new Exception("Type start and end points are too close - can't display any character.");
+		}
+	}
+
+	
+	
+	public Entity type(char c) throws Exception {
+		String filename = null;
+		for (IngameChar character : IngameChar.values()) {
+            if (character.symbol == c) {
+                filename = character.name();
+            }
+        }
+		if (filename == null) {
+			throw new Exception("Can't type character: " + c + ". Character is not supported.");
+		}
+		
+		Vector2f pos = new Vector2f();
+		
+		if (getFirst() == null) {
+			pos = xyStart;
+		} else {
+			pos.x = (getLast().getPos().x + (CHAR_W * scale));
+			if (pos.x > xyEnd.x) {
+				pos.x = getFirst().getPos().x;
+				pos.y = getLast().getPos().y - (CHAR_H * scale);
+			} else {
+				pos.y = getLast().getPos().y;
+				if (pos.y > xyEnd.y) {
+					throw new Exception("Character is out of Y bounds.");
+				}
+			}
+		}
+		
+		Model model = loader.loadOBJModel("char", Constants.DIR + "/src/main/resources/textures/characters/" + filename);
+		
+		Entity typed = new Entity(model, new Vector3f(pos.x, pos.y, zLoc), 0, scale);
+		chars.add(typed);
+		return typed;
+	}
+	
+	public Entity getFirst() {
+		return chars.getFirst();
+	}
+	public Entity getLast() {
+		return chars.getLast();
+	}
+	
+	public ArrayList<Entity> getChars() {
+		return chars;
+	}
 	
 	public static enum IngameChar {
 		_0('0'),
@@ -124,28 +197,19 @@ public class Text {
 	    public char getChar() {
 	        return symbol;
 	    }
+	    
+	    public String getFilename(char symbol) {
+	    	String o = "";
+	    	for (int i = 0; i < IngameChar.values().length; i++) {
+				if (IngameChar.values()[i].symbol == symbol) {
+					o = IngameChar.values()[i].name();
+					o = o + ".png";
+				}
+			}
+	    	return o;
+	    }
 
 	    private char symbol;
-		
-	}
-	
-	public GUI2D type(Vector3f typeStart, Vector3f typeEnd, char c, Vector4f color, float charScaling) {
-		String filename = null;
-		for (IngameChar character : IngameChar.values()) {
-            if (character.symbol == c) {
-                filename = character.name();
-            }
-        }
-		if (filename == null) {
-			System.err.println("Can't type character: " + c);
-			return null;
-		}
-		Model model = loader.loadOBJModel("char", Constants.DIR + "/src/main/resources/textures/" + filename + ".png");
-		
-		Vector3f pos = new Vector3f(typeStart + );
-		
-		charsInCurrLine++;
-		return new GUI2D(model, typeEnd, 0, charScaling);
 		
 	}
 }

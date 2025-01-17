@@ -19,10 +19,12 @@ public class SSRenderer implements IRenderer {
 		shader.link();
 		shader.createUniform("textureSampler");
 		shader.createUniform("transformationMatrix");
+		shader.bind();
+		shader.setUniform("textureSampler", 0);
+		shader.unbind();
 	}
 	
 	public void render(Entity ent, Camera cam) {
-		shader.setUniform("textureSampler", 0);
 		shader.setUniform("transformationMatrix", Transformation.createTransformMatrix(ent));
 
 		IRenderer.renderOperations(ent);

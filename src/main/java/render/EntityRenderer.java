@@ -8,6 +8,7 @@ import core.Camera;
 import core.WindowManager;
 import core.entity.Entity;
 import core.entity.Light;
+import core.utils.Constants;
 import core.utils.Transformation;
 import core.utils.Utils;
 
@@ -31,7 +32,9 @@ public class EntityRenderer implements IRenderer {
 		shader.createUniform("shineDamper");
 		shader.createUniform("lightAffected");
 		shader.bind();
-		shader.setUniform("ambientLight", fog);
+		shader.setUniform("textureSampler", 0);
+		shader.setUniform("projMatrix", WindowManager.PROJ_MAT);
+		shader.setUniform("ambientLight", Constants.FOG);
 		shader.setUniform("lightAffected", true);
 		shader.setUniform("shineDamper", -1.0f);
 		shader.unbind();
@@ -42,17 +45,13 @@ public class EntityRenderer implements IRenderer {
 		shader.setUniform("lightColour", light.getColor());
 	}
 	
-	Vector3f fog = new Vector3f(0.34f, 0.3f, 0.5f);
 	
-	public void render(Entity ent, Camera cam) {
-		shader.setUniform("textureSampler", 0);
+	
+	public void render(Entity ent, Camera cam) {	
 		shader.setUniform("transformationMatrix", Transformation.createTransformMatrix(ent));
-		shader.setUniform("projMatrix", WindowManager.PROJ_MAT);
 		shader.setUniform("viewMatrix", Transformation.getViewMatrix(cam));
 
-		
 		IRenderer.renderOperations(ent);
-	
 	}
 	
 

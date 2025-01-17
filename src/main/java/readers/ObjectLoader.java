@@ -1,5 +1,4 @@
-package core;
-
+package readers;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -25,8 +24,10 @@ import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
+import core.Vertex;
 import core.entity.Model;
 import core.entity.ModelData;
+import core.utils.Constants;
 import core.utils.Utils;
 
 public class ObjectLoader {
@@ -35,6 +36,7 @@ public class ObjectLoader {
 	private List<Integer> vbos = new ArrayList<>();
 	private List<Integer> texs = new ArrayList<>();
 	
+	@SuppressWarnings("deprecation")
 	public Model loadOBJModel (String modelF, String texF){
 		Model mod = loadOBJModel(loadOBJModel(modelF));
 		try {
@@ -57,7 +59,7 @@ public class ObjectLoader {
 		storeDataInAttrList(1, 2, data.getTextureCoords());
 		storeDataInAttrList(2, 3, data.getNormals());
 		unbind();
-		return new Model(id, data.getIndices().length);
+		return new Model(id, data.getIndices().length, (byte) 1);
 	}
 
 	public ModelData loadOBJModel(String fileName) {
@@ -263,6 +265,7 @@ public class ObjectLoader {
 
 	//
 	public int loadImg(String way) throws Exception {
+		way = Constants.DIR + "/src/main/resources/textures/" + way + ".png";
 		int width, height;
 		ByteBuffer buffer;
 		try(MemoryStack stack = MemoryStack.stackPush()) {

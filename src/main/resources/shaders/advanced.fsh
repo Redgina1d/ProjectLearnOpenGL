@@ -20,7 +20,12 @@ out vec4 fragColour;
 
 /// albedo map
 uniform sampler2D albedoMap;
-///
+/// normal map
+uniform sampler2D normalMap;
+/// roughness map
+uniform sampler2D roughnessMap;
+/// metallic map
+uniform sampler2D metallicMap;
 
 /// color of shadows and fog
 uniform vec3 ambientLight;

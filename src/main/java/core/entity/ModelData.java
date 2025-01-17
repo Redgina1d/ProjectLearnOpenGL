@@ -1,9 +1,6 @@
 package core.entity;
 
-import core.Vertex;
-
 public class ModelData {
-
 
 	private float[] vertices;
 	private float[] textureCoords;

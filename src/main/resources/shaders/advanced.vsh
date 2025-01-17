@@ -53,7 +53,7 @@ void main() {
 	vec4 worldPos = transformationMatrix * vec4(position, 1.0);
 	// converting world space to camera space
 	vec4 posRelativeToCam = viewMatrix * worldPos;
-	// defines vertex position in the screenspace
+	// defines vertex position in the screenspace and applies projMat
 	gl_Position = projMatrix * posRelativeToCam;
 	
 	// vector that is perpendicular to the fragment

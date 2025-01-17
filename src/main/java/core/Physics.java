@@ -2,6 +2,7 @@ package core;
 
 import org.joml.Vector3f;
 
+@Deprecated
 public abstract class Physics {
 
 	private float g = -9.81f;

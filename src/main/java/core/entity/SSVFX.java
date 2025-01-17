@@ -2,6 +2,7 @@ package core.entity;
 
 import org.joml.Vector3f;
 
+@Deprecated
 public class SSVFX {
 	
 	private Vector3f pos;

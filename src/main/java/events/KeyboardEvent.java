@@ -1,14 +1,12 @@
 package events;
 
 import java.util.ArrayList;
-
 import org.lwjgl.glfw.GLFW;
-
-import core.ILogic;
 import core.WindowManager;
-import core.utils.MouseInput;
 
-public class KeyboardEvent implements ILogic {
+// idk what the damn it should be
+@Deprecated
+public class KeyboardEvent implements IEvent {
 
 	private ArrayList<Integer> keyCombo;
 	private WindowManager window;
@@ -39,7 +37,7 @@ public class KeyboardEvent implements ILogic {
 		
 	}
 	@Override
-	public void init() throws Exception {
+	public void init(){
 		// TODO Auto-generated method stub
 		
 	}
@@ -47,14 +45,6 @@ public class KeyboardEvent implements ILogic {
 	public void input() {
 		// TODO Auto-generated method stub
 		
-	}
-	@Override
-	public void update(float interval, MouseInput mouseInput) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void render() {
 	}
 	@Override
 	public void cleanup() {
