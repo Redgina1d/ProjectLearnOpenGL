@@ -1,5 +1,6 @@
 package core;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import org.joml.Vector2f;
@@ -26,18 +27,21 @@ public class Text {
 	private ObjectLoader loader;
 	
 	
-	public Text(ArrayList<Entity> chars, float scale, Vector2f xyStart, Vector2f xyEnd, float zLoc) throws Exception {
-		this.chars = chars;
+	public Text(CharSequence chars, float scale, Vector2f xyStart, Vector2f xyEnd, float zLoc) throws Exception {
 		this.scale = scale;
 		this.xyStart = xyStart;
 		this.xyEnd = xyEnd;
 		this.zLoc = zLoc;
+		this.chars = new ArrayList<Entity>();
 		loader = new ObjectLoader();
 		maxCharsInX = (byte) Math.floor((xyEnd.x - xyStart.x) / (CHAR_W * scale));
 		maxCharsInY = (byte) Math.floor((xyEnd.y - xyStart.y) / (CHAR_H * scale));
 		if (maxCharsInX < 1 || maxCharsInY < 1) {
 			throw new Exception("Type start and end points are too close - can't display any character.");
 		}
+		for (int i = 0; i < chars.length(); i++) {
+			type(chars.charAt(i));
+		};
 	}
 
 	
@@ -55,7 +59,7 @@ public class Text {
 		
 		Vector2f pos = new Vector2f();
 		
-		if (getFirst() == null) {
+		if (chars.size() == 0) {
 			pos = xyStart;
 		} else {
 			pos.x = (getLast().getPos().x + (CHAR_W * scale));
@@ -69,8 +73,8 @@ public class Text {
 				}
 			}
 		}
-		
-		Model model = loader.loadOBJModel("char", Constants.DIR + "/src/main/resources/textures/characters/" + filename);
+
+		Model model = loader.loadOBJModel("char", "characters/" + filename);
 		
 		Entity typed = new Entity(model, new Vector3f(pos.x, pos.y, zLoc), 0, scale);
 		chars.add(typed);

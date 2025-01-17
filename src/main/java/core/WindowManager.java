@@ -13,12 +13,18 @@ import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
 import static org.lwjgl.glfw.GLFW.glfwWindowHint;
 
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+
 import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.stb.STBImage;
+import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
 import core.utils.Constants;
@@ -35,6 +41,8 @@ public class WindowManager {
 	
 	private boolean resize, vSync;
 	
+	private boolean maximized = false;
+	
 	public static final Matrix4f PROJ_MAT = new Matrix4f().setPerspective(Constants.FOV, 1.7777778f, Constants.Z_NEAR, Constants.Z_FAR);
 	
 	
@@ -50,7 +58,7 @@ public class WindowManager {
 	boolean close = false;
 	
 	
-	public void init() {
+	public void init() throws Exception {
 		// Setup an error callback. The default implementation
 		// will print the error message in System.err.
 		GLFWErrorCallback.createPrint(System.err).set();
@@ -70,10 +78,44 @@ public class WindowManager {
 		glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
 		glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 		
+		
+		
+		
+		
+		
+		
+		GLFWImage.Buffer f;
+		
+		ByteBuffer buffer;
+		try(MemoryStack stack = MemoryStack.stackPush()) {
+			IntBuffer w = stack.mallocInt(1);
+			IntBuffer h = stack.mallocInt(1);
+			IntBuffer c = stack.mallocInt(1);
+			buffer = STBImage.stbi_load(Constants.DIR + "/src/main/resources/textures/others/icon.png", w, h, c, 4);
+			if(buffer == null)
+				throw new Exception("Image File " + Constants.DIR + "/src/main/resources/textures/others/icon.png" + " can't be loaded. Cause: " + STBImage.stbi_failure_reason());
+			
+			GLFWImage iMGlfwImage = GLFWImage.malloc();
+	        iMGlfwImage.set(w.get(), h.get(), buffer);
+			f = GLFWImage.malloc(1);
+			f.put(0, iMGlfwImage);
+			
+			STBImage.stbi_image_free(buffer);
+			f.free();
+			iMGlfwImage.free();
+			
+		}
+		
+        
+		//
+		
+		
+
+		
 		GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
 
 		
-		boolean maximized = false;
+		
 		if (width == 0 || height == 0) {
 			width = vidMode.width();
 			height = vidMode.height();
@@ -84,6 +126,8 @@ public class WindowManager {
 		window = glfwCreateWindow(width, height, title, MemoryUtil.NULL, MemoryUtil.NULL);
 		if (window == MemoryUtil.NULL)
 			throw new RuntimeException("Failed to create the GLFW window");
+		
+		GLFW.glfwSetWindowPos(window, (vidMode.width() - 1600) / 2, (vidMode.height() - 900) / 2);
 		
 		GLFW.glfwSetWindowOpacity(window, 0);
 		
@@ -98,17 +142,37 @@ public class WindowManager {
 		});
 		
 		glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
-			if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE ) {
-				close = true;
-				
-			} else if (key == GLFW.GLFW_KEY_MINUS && action == GLFW_RELEASE) {
-				try {
-					GLFW.glfwIconifyWindow(window);
-				} catch (Exception e2) {
-					e2.printStackTrace();
+			try {
+				if (action == GLFW_RELEASE) {
+					switch (key) {
+						case GLFW_KEY_ESCAPE: {
+							close = true;
+							break;
+						}
+						case GLFW.GLFW_KEY_F11: {
+							if (!maximized) {
+								System.out.println(width + " " + height);
+								GLFW.glfwSetWindowAttrib(window, GLFW.GLFW_DECORATED, GLFW_FALSE);
+								GLFW.glfwMaximizeWindow(window);
+								maximized = true;
+							} else {
+								GLFW.glfwSetWindowAttrib(window, GLFW.GLFW_DECORATED, GLFW_TRUE);
+								GLFW.glfwRestoreWindow(window);
+								GLFW.glfwSetWindowSize(window, 1600, 900);
+								GLFW.glfwSetWindowPos(window, (vidMode.width() - 1600) / 2, (vidMode.height() - 900) / 2);
+								System.out.println(width + " " + height);
+								maximized = false;
+							}
+							
+						}
+					}
 				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
+
 		});
+		
 		
 		
 		if(maximized)
@@ -116,12 +180,12 @@ public class WindowManager {
 		else {
 			//
 		}
-		GLFW.glfwMakeContextCurrent(window);
 		
+		GLFW.glfwMakeContextCurrent(window);
 		if(isvSync()) {
 			GLFW.glfwSwapInterval(1);
 		}
-		
+		GLFW.glfwSetWindowIcon(window, f);
 		GLFW.glfwShowWindow(window);
 		
 		GL.createCapabilities();

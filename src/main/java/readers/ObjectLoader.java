@@ -1,5 +1,6 @@
 package readers;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -268,6 +269,11 @@ public class ObjectLoader {
 		way = Constants.DIR + "/src/main/resources/textures/" + way + ".png";
 		int width, height;
 		ByteBuffer buffer;
+		File fl = new File(way);
+		System.out.println(fl);
+		if (!fl.exists()) {
+			throw new Exception("no file");
+		}
 		try(MemoryStack stack = MemoryStack.stackPush()) {
 			IntBuffer w = stack.mallocInt(1);
 			IntBuffer h = stack.mallocInt(1);

@@ -10,6 +10,7 @@ import org.lwjgl.opengl.GL11;
 import core.Area;
 import core.Camera;
 import core.ILogic;
+import core.Text;
 import core.WindowManager;
 import core.entity.Entity;
 import core.entity.Light;
@@ -33,6 +34,7 @@ public class TestGame implements ILogic {
 	private ArrayList<Entity> entList;
 	private ArrayList<Entity> terrainList;
 	private ArrayList<Entity> ssList;
+	private ArrayList<Entity> txtList;
 	
 	private ArrayList<Area> areaList;
 	private ArrayList<Light> lightList;
@@ -57,6 +59,7 @@ public class TestGame implements ILogic {
 		entList = new ArrayList<Entity>();
 		terrainList = new ArrayList<Entity>();
 		ssList = new ArrayList<Entity>();
+		txtList = new ArrayList<Entity>();
 		
 		areaList = new ArrayList<Area>();
 		lightList = new ArrayList<Light>();
@@ -75,6 +78,9 @@ public class TestGame implements ILogic {
 	public void init() throws Exception {
 		
 		
+		
+		Text txt = new Text("HELLO WORLDD!!", 0.1f, new Vector2f(0.5f, 0.5f), new Vector2f(0.8f, 0.8f), 0);
+		
 		Model guiModel = loader.loadOBJModel("sqr_1x1", "AIM2");
 		Model consoleModel = loader.loadOBJModel("sqr_1x1", "CONSOLE");
 		
@@ -84,8 +90,12 @@ public class TestGame implements ILogic {
 		Model surfaceModel = loader.loadOBJModel("detailed_surface", "green");
 		Entity surface = new Entity(surfaceModel, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), 1);
 		
+		
 		ssList.add(crosshair);
 		ssList.add(consoleBackground);
+		for (int i = 0; i < txt.getChars().size(); i++) {
+			txtList.add(txt.getChars().get(i));
+		}
 		entList.add(surface);
 		
 		
@@ -154,6 +164,7 @@ public class TestGame implements ILogic {
 		if (guiBools[0]) {
 			ssRend.render(ssList.get(1), camera);
 		}
+		ssRend.renderList(txtList, camera);
 		ssRend.shader.unbind();
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		
