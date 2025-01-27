@@ -1,6 +1,5 @@
 package core;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import org.joml.Vector2f;
@@ -8,42 +7,54 @@ import org.joml.Vector3f;
 
 import core.entity.Entity;
 import core.entity.Model;
-import core.utils.Constants;
 import readers.ObjectLoader;
 
 public class Text {
 	
 	private ArrayList<Entity> chars;
 	private float scale;
-	private byte maxCharsInX, maxCharsInY;
+	private int maxCharsInX, maxCharsInY;
 	
 	private Vector2f xyStart, xyEnd;
 	private float zLoc;
+	private float xSpacing;
+	private float ySpacing;
 
 	public static final float CHAR_RATIO = 0.6f;
-	public static final float CHAR_W = 1.2f;
-	public static final float CHAR_H = 2;
 	
 	private ObjectLoader loader;
 	
 	
-	public Text(CharSequence chars, float scale, Vector2f xyStart, Vector2f xyEnd, float zLoc) throws Exception {
+	public Text(CharSequence chars, float scale, Vector2f xyStart, Vector2f xyEnd, float zLoc, float xSpacing, float ySpacing) throws Exception {
 		this.scale = scale;
 		this.xyStart = xyStart;
 		this.xyEnd = xyEnd;
 		this.zLoc = zLoc;
+		this.xSpacing = xSpacing;
+		this.ySpacing = ySpacing;
 		this.chars = new ArrayList<Entity>();
+		if (xyStart.x > xyEnd.x || xyStart.y < xyEnd.y) {
+			throw new Exception("Start point must be to the left and above of the end point.");
+		}
 		loader = new ObjectLoader();
-		maxCharsInX = (byte) Math.floor((xyEnd.x - xyStart.x) / (CHAR_W * scale));
-		maxCharsInY = (byte) Math.floor((xyEnd.y - xyStart.y) / (CHAR_H * scale));
-		if (maxCharsInX < 1 || maxCharsInY < 1) {
+		float chW = scale * CHAR_RATIO;
+		float chH = scale;
+		float spaceWidth = Math.abs(xyEnd.x - xyStart.x);
+		float spaceHeight = Math.abs(xyEnd.y - xyStart.y);
+		maxCharsInX = (int) Math.floor(spaceWidth / (chW + xSpacing));
+		maxCharsInY = (int) Math.floor(spaceHeight / (chH + ySpacing));
+		System.out.println("Max chars in X line: " + maxCharsInX + 
+				" char width is: " + chW + " space width is: " + spaceWidth + " xSpacing is: " + xSpacing);
+		System.out.println("Max chars in Y line: " + maxCharsInY + 
+				" char height is: " + chH + " space height is: " + spaceHeight + " ySpacing is: " + ySpacing);
+		if (maxCharsInX == 0 || maxCharsInY == 0) {
 			throw new Exception("Type start and end points are too close - can't display any character.");
 		}
 		for (int i = 0; i < chars.length(); i++) {
 			type(chars.charAt(i));
+			System.out.println(this.chars.get(i).getPos());
 		};
 	}
-
 	
 	
 	public Entity type(char c) throws Exception {
@@ -60,15 +71,16 @@ public class Text {
 		Vector2f pos = new Vector2f();
 		
 		if (chars.size() == 0) {
-			pos = xyStart;
+			pos.x = xyStart.x + ((scale * CHAR_RATIO) / 2);
+			pos.y = xyStart.y - (scale / 2);
 		} else {
-			pos.x = (getLast().getPos().x + (CHAR_W * scale));
+			pos.x = (getLast().getPos().x + (scale * CHAR_RATIO) + xSpacing);
 			if (pos.x > xyEnd.x) {
 				pos.x = getFirst().getPos().x;
-				pos.y = getLast().getPos().y - (CHAR_H * scale);
+				pos.y = getLast().getPos().y - scale - ySpacing;
 			} else {
 				pos.y = getLast().getPos().y;
-				if (pos.y > xyEnd.y) {
+				if (pos.y < xyEnd.y) {
 					throw new Exception("Character is out of Y bounds.");
 				}
 			}
@@ -92,6 +104,70 @@ public class Text {
 		return chars;
 	}
 	
+	
+	
+	public float getScale() {
+		return scale;
+	}
+
+
+
+	public int getMaxCharsInX() {
+		return maxCharsInX;
+	}
+
+
+
+	public int getMaxCharsInY() {
+		return maxCharsInY;
+	}
+
+
+
+	public Vector2f getXyStart() {
+		return xyStart;
+	}
+
+
+
+	public Vector2f getXyEnd() {
+		return xyEnd;
+	}
+
+
+
+	public float getzLoc() {
+		return zLoc;
+	}
+
+
+
+	public float getxSpacing() {
+		return xSpacing;
+	}
+
+
+
+	public float getySpacing() {
+		return ySpacing;
+	}
+
+
+
+	public static float getCharRatio() {
+		return CHAR_RATIO;
+	}
+
+
+
+
+
+	public ObjectLoader getLoader() {
+		return loader;
+	}
+
+
+
 	public static enum IngameChar {
 		_0('0'),
 		_1('1'),

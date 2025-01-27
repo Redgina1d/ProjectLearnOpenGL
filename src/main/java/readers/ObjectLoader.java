@@ -270,7 +270,6 @@ public class ObjectLoader {
 		int width, height;
 		ByteBuffer buffer;
 		File fl = new File(way);
-		System.out.println(fl);
 		if (!fl.exists()) {
 			throw new Exception("no file");
 		}
